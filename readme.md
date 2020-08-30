@@ -1,7 +1,7 @@
 # Личный проект «Типотека» [![Build status][travis-image]][travis-url]
 
-* Студент: [Илья Волков](https://up.htmlacademy.ru/nodejs/3/user/1000609).
-* Наставник: `Неизвестно`.
+* Студент: [Илья Волков](https://htmlacademy.ru/profile/ilya1337).
+* Наставник: [Сергей Вохмянин](https://htmlacademy.ru/profile/id530823).
 
 ---
 
