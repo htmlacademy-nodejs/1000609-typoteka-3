@@ -71,7 +71,7 @@ const CATEGORIES = [
 ];
 
 const generateMockData = (count) => (
-  Array(count).fill({}).map(() => ({
+  Array.from({length: count}, () => ({
     title: TITLES[getRandomInt(0, TITLES.length - 1)],
     createdDate: getRandomDate(),
     announce: shuffleAndSlice(SENTENCES, 5).join(` `),
@@ -87,7 +87,7 @@ module.exports = {
 
     if (count > 1000) {
       console.error(chalk.red(`Не больше 1000 публикаций`));
-      process.exit(ExitCode.error);
+      process.exit(ExitCode.ERROR);
     }
 
     const content = JSON.stringify(generateMockData(count));
@@ -95,10 +95,10 @@ module.exports = {
     try {
       await fs.writeFile(FILE_NAME, content);
       console.info(chalk.green(`Operation success. File created.`));
-      process.exit(ExitCode.success);
+      process.exit(ExitCode.SUCCESS);
     } catch (err) {
       console.error(chalk.red(`Can't write data to file...`));
-      process.exit(ExitCode.error);
+      process.exit(ExitCode.ERROR);
     }
   }
 };

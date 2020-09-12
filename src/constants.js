@@ -1,10 +1,16 @@
 'use strict';
 
-module.exports.DEFAULT_COMMAND = `--help`;
+const DEFAULT_COMMAND = `--help`;
 
-module.exports.USER_ARGV_INDEX = 2;
+const USER_ARGV_INDEX = 2;
 
-module.exports.ExitCode = {
-  error: 1,
-  success: 0
+const ExitCode = {
+  ERROR: 1,
+  SUCCESS: 0,
+};
+
+module.exports = {
+  DEFAULT_COMMAND,
+  USER_ARGV_INDEX,
+  ExitCode
 };
