@@ -1,13 +1,12 @@
 'use strict';
 
-const path = require(`path`);
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
 const {ExitCode} = require(`../../constants`);
 const {getRandomInt, getRandomDate, shuffleAndSlice} = require(`../../utils.js`);
 
 const DEFAULT_COUNT = 1;
-const FILE_NAME = `${path.resolve(__dirname, `../../..`)}/mocks.json`;
+const FILE_NAME = `mocks.json`;
 
 const TITLES = [
   `Ёлки. История деревьев`,
