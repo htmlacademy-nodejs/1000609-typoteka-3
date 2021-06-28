@@ -3,7 +3,7 @@
 const {HttpCode} = require(`../../constants`);
 
 module.exports = (service) => (req, res, next) => {
-  const {postId} = req.params;
+  const {articleId: postId} = req.params;
   const post = service.findOne(postId);
 
   if (!post) {
