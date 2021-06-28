@@ -12,6 +12,12 @@ const FILE_NAME = `mocks.json`;
 const FILE_TITLES_PATH = `./data/titles.txt`;
 const FILE_SENTENCES_PATH = `./data/sentences.txt`;
 const FILE_CATEGORIES_PATH = `./data/categories.txt`;
+const FILE_COMMENTS_PATH = `./data/comments.txt`;
+
+const CommentsRestrict = {
+  MIN: 0,
+  MAX: 4,
+};
 
 const readContent = async (filePath) => {
   try {
@@ -23,14 +29,22 @@ const readContent = async (filePath) => {
   }
 };
 
-const generateMockData = (count, titles, sentences, categories) => (
+const generateComments = (count, comments) => (
+  Array.from({length: count}, () => ({
+    id: nanoid(MAX_ID_LENGTH),
+    text: shuffleAndSlice(comments).join(` `)
+  }))
+);
+
+const generateMockData = (count, titles, sentences, categories, comments) => (
   Array.from({length: count}, () => ({
     id: nanoid(MAX_ID_LENGTH),
     title: titles[getRandomInt(0, titles.length - 1)],
     createdDate: getRandomDate(),
     announce: shuffleAndSlice(sentences, 5).join(` `),
     fullText: shuffleAndSlice(sentences).join(` `),
-    category: shuffleAndSlice(categories)
+    category: shuffleAndSlice(categories),
+    comments: generateComments(getRandomInt(CommentsRestrict.MIN, CommentsRestrict.MAX), comments)
   }))
 );
 
@@ -41,13 +55,14 @@ module.exports = {
     const titles = await readContent(FILE_TITLES_PATH);
     const sentences = await readContent(FILE_SENTENCES_PATH);
     const categories = await readContent(FILE_CATEGORIES_PATH);
+    const comments = await readContent(FILE_COMMENTS_PATH);
 
     if (count > 1000) {
       console.error(chalk.red(`Не больше 1000 публикаций`));
       process.exit(ExitCode.ERROR);
     }
 
-    const content = JSON.stringify(generateMockData(count, titles, sentences, categories));
+    const content = JSON.stringify(generateMockData(count, titles, sentences, categories, comments));
 
     try {
       await fs.writeFile(FILE_NAME, content);
