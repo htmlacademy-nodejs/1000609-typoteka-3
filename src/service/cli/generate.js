@@ -2,7 +2,8 @@
 
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
-const {ExitCode} = require(`../../constants`);
+const {nanoid} = require(`nanoid`);
+const {ExitCode, MAX_ID_LENGTH} = require(`../../constants`);
 const {getRandomInt, getRandomDate, shuffleAndSlice} = require(`../../utils.js`);
 
 const DEFAULT_COUNT = 1;
@@ -24,6 +25,7 @@ const readContent = async (filePath) => {
 
 const generateMockData = (count, titles, sentences, categories) => (
   Array.from({length: count}, () => ({
+    id: nanoid(MAX_ID_LENGTH),
     title: titles[getRandomInt(0, titles.length - 1)],
     createdDate: getRandomDate(),
     announce: shuffleAndSlice(sentences, 5).join(` `),
