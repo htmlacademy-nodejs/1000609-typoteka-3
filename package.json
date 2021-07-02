@@ -4,7 +4,8 @@
   "description": "Типотека",
   "main": "./src/service/service.js",
   "scripts": {
-    "test": "npm run eslint",
+    "test": "npm run eslint && npm run test::rest",
+    "test::rest": "jest --verbose ./src/service/api",
     "eslint": "eslint --ext .js src/",
     "start": "node ./src/service/service.js",
     "start-front-server": "nodemon ./src/express/express.js",
