@@ -9,9 +9,9 @@ const Cli = {
   [generate.name]: generate,
   [help.name]: help,
   [version.name]: version,
-  [server.name]: server,
+  [server.name]: server
 };
 
 module.exports = {
-  Cli,
+  Cli
 };

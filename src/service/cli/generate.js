@@ -16,7 +16,7 @@ const FILE_COMMENTS_PATH = `./data/comments.txt`;
 
 const CommentsRestrict = {
   MIN: 0,
-  MAX: 4,
+  MAX: 4
 };
 
 const readContent = async (filePath) => {
