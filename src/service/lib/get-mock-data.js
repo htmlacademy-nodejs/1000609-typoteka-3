@@ -1,8 +1,11 @@
 'use strict';
 
 const fs = require(`fs`).promises;
+const {getLogger} = require(`../lib/logger`);
 const FILE_NAME = `mocks.json`;
 const NO_SUCH_FILE_OR_DIRECTORY_ERROR_CODE = `ENOENT`;
+
+const logger = getLogger({name: `get-mock-data`});
 let data = [];
 
 const getMockData = async () => {
@@ -15,9 +18,9 @@ const getMockData = async () => {
     data = JSON.parse(fileContent);
   } catch (err) {
     if (err.code === NO_SUCH_FILE_OR_DIRECTORY_ERROR_CODE) {
-      console.error(`Сгенерируйте файл mocks.json с помощью npm run start -- --generate!`);
+      logger.error(`Generate mocks.json file using npm run start -- --generate!`);
     } else {
-      console.error(err);
+      logger.error(`An error occurred: ${err.message}`);
     }
   }
 
