@@ -5,6 +5,11 @@ const API_PREFIX = `/api`;
 const USER_ARGV_INDEX = 2;
 const MAX_ID_LENGTH = 6;
 
+const Env = {
+  DEVELOPMENT: `development`,
+  PRODUCTION: `production`
+};
+
 const ExitCode = {
   ERROR: 1,
   SUCCESS: 0
@@ -22,6 +27,7 @@ module.exports = {
   API_PREFIX,
   USER_ARGV_INDEX,
   MAX_ID_LENGTH,
+  Env,
   ExitCode,
   HttpCode
 };
