@@ -19,10 +19,10 @@ const mockData = [
     comments: [
       {
         id: `QeF8QN`,
-        text: `Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Планируете записать видосик на эту тему? Хочу такую же футболку :-) Давно не пользуюсь стационарными компьютерами. Ноутбуки победили.`,
+        text: `Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Планируете записать видосик на эту тему? Хочу такую же футболку :-) Давно не пользуюсь стационарными компьютерами. Ноутбуки победили.`
       }, {
         id: `dVKa-0`,
-        text: `Хочу такую же футболку :-) Мне кажется или я уже читал это где-то? Планируете записать видосик на эту тему?`,
+        text: `Хочу такую же футболку :-) Мне кажется или я уже читал это где-то? Планируете записать видосик на эту тему?`
       }, {
         id: `w_2OYi`,
         text: `Согласен с автором!`
@@ -46,7 +46,7 @@ const mockData = [
     comments: [
       {
         id: `GTRSGu`,
-        text: `Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Это где ж такие красоты? Совсем немного... Хочу такую же футболку :-)`,
+        text: `Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Это где ж такие красоты? Совсем немного... Хочу такую же футболку :-)`
       }
     ]
   }, {
@@ -59,7 +59,7 @@ const mockData = [
     comments: [
       {
         id: `iQfmHD`,
-        text: `Это где ж такие красоты? Согласен с автором! Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Мне кажется или я уже читал это где-то? Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Планируете записать видосик на эту тему? Хочу такую же футболку :-)`,
+        text: `Это где ж такие красоты? Согласен с автором! Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Мне кажется или я уже читал это где-то? Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Планируете записать видосик на эту тему? Хочу такую же футболку :-)`
       }
     ]
   }, {
@@ -83,10 +83,11 @@ const createAPI = (data = mockData) => {
 
 describe(`Post`, () => {
   describe(`API returns a list of all posts`, () => {
-    const app = createAPI();
     let response;
 
     beforeAll(async () => {
+      const app = createAPI();
+
       response = await request(app)
         .get(`/articles`);
     });
@@ -98,11 +99,12 @@ describe(`Post`, () => {
   });
 
   describe(`API handles the situation when the are no posts`, () => {
-    const mockEmptyData = [];
-    const app = createAPI(mockEmptyData);
     let response;
 
     beforeAll(async () => {
+      const mockEmptyData = [];
+      const app = createAPI(mockEmptyData);
+
       response = await request(app)
         .get(`/articles`);
     });
@@ -112,10 +114,11 @@ describe(`Post`, () => {
   });
 
   describe(`API returns a post with given id`, () => {
-    const app = createAPI();
     let response;
 
     beforeAll(async () => {
+      const app = createAPI();
+
       response = await request(app)
         .get(`/articles/EP8PdB`);
     });
@@ -137,10 +140,11 @@ describe(`Post`, () => {
   });
 
   describe(`API handles getting a post with a non-existent id`, () => {
-    const app = createAPI();
     let response;
 
     beforeAll(async () => {
+      const app = createAPI();
+
       response = await request(app)
         .get(`/articles/NOEXST`);
     });
@@ -157,10 +161,12 @@ describe(`Post`, () => {
       category: [`Категория публикации`]
     };
 
-    const app = createAPI();
     let response;
+    let app;
 
     beforeAll(async () => {
+      app = createAPI();
+
       response = await request(app)
         .post(`/articles`)
         .send(newPost);
@@ -187,9 +193,13 @@ describe(`Post`, () => {
       category: [`Категория публикации`]
     };
 
-    test(`Without any required property response code is 400`, async () => {
-      const app = createAPI();
+    let app;
 
+    beforeAll(async () => {
+      app = createAPI();
+    });
+
+    test(`Without any required property response code is 400`, async () => {
       for (const key of Object.keys(newPost)) {
         const badPost = {...newPost};
         delete badPost[key];
@@ -201,7 +211,6 @@ describe(`Post`, () => {
     });
 
     test(`Posts count isn't changed`, async () => {
-      const app = createAPI();
       const badPost = {};
 
       await request(app)
@@ -223,10 +232,12 @@ describe(`Post`, () => {
       category: [`Категория публикации`]
     };
 
-    const app = createAPI();
+    let app;
     let response;
 
     beforeAll(async () => {
+      app = createAPI();
+
       response = await request(app)
         .put(`/articles/NYC34a`)
         .send(newPost);
@@ -253,10 +264,12 @@ describe(`Post`, () => {
       category: [`Категория публикации`]
     };
 
-    const app = createAPI();
+    let app;
     let response;
 
     beforeAll(async () => {
+      app = createAPI();
+
       response = await request(app)
         .put(`/articles/NOEXST`)
         .send(newPost);
@@ -273,9 +286,9 @@ describe(`Post`, () => {
       fullText: `Отсутствует поле category`
     };
 
-    const app = createAPI();
-
     test(`Status code 400`, async () => {
+      const app = createAPI();
+
       await request(app)
         .put(`/articles/NYC34a`)
         .send(invalidPost)
@@ -284,10 +297,12 @@ describe(`Post`, () => {
   });
 
   describe(`API correctly deletes a post`, () => {
-    const app = createAPI();
+    let app;
     let response;
 
     beforeAll(async () => {
+      app = createAPI();
+
       response = await request(app)
         .delete(`/articles/x1P-iD`);
     });
@@ -303,9 +318,9 @@ describe(`Post`, () => {
   });
 
   describe(`API refuses to delete a non-existent post`, () => {
-    const app = createAPI();
-
     test(`Status code 404`, async () => {
+      const app = createAPI();
+
       await request(app)
         .delete(`/articles/NOEXST`)
         .expect(HttpCode.NOT_FOUND);
@@ -313,10 +328,12 @@ describe(`Post`, () => {
   });
 
   describe(`API returns a list of comments to given post`, () => {
-    const app = createAPI();
+    let app;
     let response;
 
     beforeAll(async () => {
+      app = createAPI();
+
       response = await request(app)
         .get(`/articles/x1P-iD/comments`);
     });
@@ -334,10 +351,12 @@ describe(`Post`, () => {
   });
 
   describe(`API correctly deletes a comment`, () => {
-    const app = createAPI();
+    let app;
     let response;
 
     beforeAll(async () => {
+      app = createAPI();
+
       response = await request(app)
         .delete(`/articles/7CcE77/comments/dVKa-0`);
     });
@@ -353,9 +372,9 @@ describe(`Post`, () => {
   });
 
   describe(`API refuses to delete a non-existent comment`, () => {
-    const app = createAPI();
-
     test(`Status code 404`, async () => {
+      const app = createAPI();
+
       await request(app)
         .delete(`/articles/7CcE77/comments/NOEXST`)
         .expect(HttpCode.NOT_FOUND);
@@ -363,9 +382,9 @@ describe(`Post`, () => {
   });
 
   describe(`API refuses to delete a comment to a non-existent post`, () => {
-    const app = createAPI();
-
     test(`Status code 404`, async () => {
+      const app = createAPI();
+
       await request(app)
         .delete(`/articles/NOEXST/comments/dVKa-0`)
         .expect(HttpCode.NOT_FOUND);
@@ -377,10 +396,12 @@ describe(`Post`, () => {
       text: `Валидному комментарию достаточно этого поля`
     };
 
-    const app = createAPI();
+    let app;
     let response;
 
     beforeAll(async () => {
+      app = createAPI();
+
       response = await request(app)
         .post(`/articles/I0Bi8t/comments`)
         .send(newComment);
@@ -399,9 +420,9 @@ describe(`Post`, () => {
   });
 
   describe(`API refuses to create a comment to a non-existent post`, () => {
-    const app = createAPI();
-
     test(`Status code 404`, async () => {
+      const app = createAPI();
+
       await request(app)
         .post(`/articles/NOEXST/comments`)
         .send({
@@ -413,10 +434,12 @@ describe(`Post`, () => {
 
   describe(`API refuses to create a comment if data is invalid`, () => {
     const invalidComment = {};
-    const app = createAPI();
+    let app;
     let response;
 
     beforeAll(async () => {
+      app = createAPI();
+
       response = await request(app)
         .post(`/articles/I0Bi8t/comments`)
         .send(invalidComment);
