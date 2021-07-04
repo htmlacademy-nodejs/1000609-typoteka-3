@@ -136,7 +136,7 @@ describe(`Post`, () => {
     test(`Post's title is "Учим HTML и CSS"`, () => expect(response.body.title).toBe(`Учим HTML и CSS`));
   });
 
-  describe(`API handles non-existent post's id`, () => {
+  describe(`API handles getting a post with a non-existent id`, () => {
     const app = createAPI();
     let response;
 
@@ -146,5 +146,169 @@ describe(`Post`, () => {
     });
 
     test(`Status code 404`, () => expect(response.statusCode).toBe(HttpCode.NOT_FOUND));
+  });
+
+  describe(`API creates a post if data is valid`, () => {
+    const newPost = {
+      title: `Заголовок публикации`,
+      createdDate: `2021-01-12 00:00:00`,
+      announce: `Анонс публикации`,
+      fullText: `Полный текст публикации`,
+      category: [`Категория публикации`]
+    };
+
+    const app = createAPI();
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app)
+        .post(`/articles`)
+        .send(newPost);
+    });
+
+    test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
+    test(`Content-Type application.json`, () => expect(response.type).toBe(`application/json`));
+    test(`Returns post created`, () => expect(response.body).toEqual(
+        expect.objectContaining(newPost)
+    ));
+    test(`Posts count is changed`, async () => {
+      await request(app)
+        .get(`/articles`)
+        .expect((res) => expect(res.body.length).toBe(6));
+    });
+  });
+
+  describe(`API refuses to create a post if data is invalid`, () => {
+    const newPost = {
+      title: `Заголовок публикации`,
+      createdDate: `2021-01-12 00:00:00`,
+      announce: `Анонс публикации`,
+      fullText: `Полный текст публикации`,
+      category: [`Категория публикации`]
+    };
+
+    test(`Without any required property response code is 400`, async () => {
+      const app = createAPI();
+
+      for (const key of Object.keys(newPost)) {
+        const badPost = {...newPost};
+        delete badPost[key];
+        await request(app)
+          .post(`/articles`)
+          .send(badPost)
+          .expect(HttpCode.BAD_REQUEST);
+      }
+    });
+
+    test(`Posts count isn't changed`, async () => {
+      const app = createAPI();
+      const badPost = {};
+
+      await request(app)
+        .post(`/articles`)
+        .send(badPost);
+
+      await request(app)
+        .get(`/articles`)
+        .expect((res) => expect(res.body.length).toBe(5));
+    });
+  });
+
+  describe(`API changes an existent post`, () => {
+    const newPost = {
+      title: `Заголовок публикации`,
+      createdDate: `2021-01-12 00:00:00`,
+      announce: `Анонс публикации`,
+      fullText: `Полный текст публикации`,
+      category: [`Категория публикации`]
+    };
+
+    const app = createAPI();
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app)
+        .put(`/articles/NYC34a`)
+        .send(newPost);
+    });
+
+    test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+    test(`Content-Type application/json`, () => expect(response.type).toBe(`application/json`));
+    test(`Returns changed post`, () => expect(response.body).toEqual(
+        expect.objectContaining(newPost)
+    ));
+    test(`Post is really changed`, async () => {
+      await request(app)
+        .get(`/articles/NYC34a`)
+        .expect((res) => expect(res.body.title).toBe(`Заголовок публикации`));
+    });
+  });
+
+  describe(`API refuses to change a non-existent post`, () => {
+    const newPost = {
+      title: `Заголовок публикации`,
+      createdDate: `2021-01-12 00:00:00`,
+      announce: `Анонс публикации`,
+      fullText: `Полный текст публикации`,
+      category: [`Категория публикации`]
+    };
+
+    const app = createAPI();
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app)
+        .put(`/articles/NOEXST`)
+        .send(newPost);
+    });
+
+    test(`Status code 404`, () => expect(response.statusCode).toBe(HttpCode.NOT_FOUND));
+  });
+
+  describe(`API refuses to change an existent post if data is invalid`, () => {
+    const invalidPost = {
+      title: `Заголовок публикации`,
+      createdDate: `2021-04-07 00:00:00`,
+      announce: `В которой есть ошибка`,
+      fullText: `Отсутствует поле category`
+    };
+
+    const app = createAPI();
+
+    test(`Status code 400`, async () => {
+      await request(app)
+        .put(`/articles/NYC34a`)
+        .send(invalidPost)
+        .expect(HttpCode.BAD_REQUEST);
+    });
+  });
+
+  describe(`API correctly deletes a post`, () => {
+    const app = createAPI();
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app)
+        .delete(`/articles/x1P-iD`);
+    });
+
+    test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+    test(`Content-Type application/json`, () => expect(response.type).toBe(`application/json`));
+    test(`Returns deleted post`, () => expect(response.body.id).toBe(`x1P-iD`));
+    test(`Posts count is 4 now`, async () => {
+      await request(app)
+        .get(`/articles`)
+        .expect((res) => expect(res.body.length).toBe(4));
+    });
+  });
+
+  describe(`API refuses to delete a non-existent post`, () => {
+    const app = createAPI();
+
+    test(`Status code 404`, async () => {
+      await request(app)
+        .delete(`/articles/NOEXST`)
+        .expect(HttpCode.NOT_FOUND);
+    });
   });
 });

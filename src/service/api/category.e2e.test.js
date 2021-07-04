@@ -105,7 +105,7 @@ describe(`Category`, () => {
 
     test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
     test(`Content-Type application/json`, () => expect(response.type).toBe(`application/json`));
-    test(`Returns list of 9 categories`, () => expect(response.body.length).toBe(9));
+    test(`Returns a list of 9 categories`, () => expect(response.body.length).toBe(9));
     test(`Category names are Деревья, За жизнь, Без рамки, Разное, IT, Музыка, Кино, Программирование, Железо`, () => {
       expect(response.body).toEqual(
           expect.arrayContaining([`Деревья`, `За жизнь`, `Без рамки`, `Разное`, `IT`, `Музыка`, `Кино`, `Программирование`, `Железо`])
