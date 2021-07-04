@@ -311,4 +311,122 @@ describe(`Post`, () => {
         .expect(HttpCode.NOT_FOUND);
     });
   });
+
+  describe(`API returns a list of comments to given post`, () => {
+    const app = createAPI();
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app)
+        .get(`/articles/x1P-iD/comments`);
+    });
+
+    test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+    test(`Content-Type application/json`, () => expect(response.type).toBe(`application/json`));
+    test(`Returns a list of 1 comments`, () => expect(response.body.length).toBe(1));
+    test(`First comment's id is "iQfmHD"`, () => expect(response.body[0].id).toBe(`iQfmHD`));
+    test(`Comments have correct structure`, () => expect(response.body[0]).toEqual(
+        expect.objectContaining({
+          id: expect.any(String),
+          text: expect.any(String)
+        })
+    ));
+  });
+
+  describe(`API correctly deletes a comment`, () => {
+    const app = createAPI();
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app)
+        .delete(`/articles/7CcE77/comments/dVKa-0`);
+    });
+
+    test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+    test(`Content-Type application/json`, () => expect(response.type).toBe(`application/json`));
+    test(`Returns deleted comment`, () => expect(response.body.id).toBe(`dVKa-0`));
+    test(`Comments count is 2 now`, async () => {
+      await request(app)
+        .get(`/articles/7CcE77/comments`)
+        .expect((res) => expect(res.body.length).toBe(2));
+    });
+  });
+
+  describe(`API refuses to delete a non-existent comment`, () => {
+    const app = createAPI();
+
+    test(`Status code 404`, async () => {
+      await request(app)
+        .delete(`/articles/7CcE77/comments/NOEXST`)
+        .expect(HttpCode.NOT_FOUND);
+    });
+  });
+
+  describe(`API refuses to delete a comment to a non-existent post`, () => {
+    const app = createAPI();
+
+    test(`Status code 404`, async () => {
+      await request(app)
+        .delete(`/articles/NOEXST/comments/dVKa-0`)
+        .expect(HttpCode.NOT_FOUND);
+    });
+  });
+
+  describe(`API creates a comment if data is valid`, () => {
+    const newComment = {
+      text: `Валидному комментарию достаточно этого поля`
+    };
+
+    const app = createAPI();
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app)
+        .post(`/articles/I0Bi8t/comments`)
+        .send(newComment);
+    });
+
+    test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
+    test(`Content-Type application/json`, () => expect(response.type).toBe(`application/json`));
+    test(`Returns comment created`, () => expect(response.body).toEqual(
+        expect.objectContaining(newComment)
+    ));
+    test(`Comments count is changed`, async () => {
+      await request(app)
+        .get(`/articles/I0Bi8t/comments`)
+        .expect((res) => expect(res.body.length).toBe(1));
+    });
+  });
+
+  describe(`API refuses to create a comment to a non-existent post`, () => {
+    const app = createAPI();
+
+    test(`Status code 404`, async () => {
+      await request(app)
+        .post(`/articles/NOEXST/comments`)
+        .send({
+          test: `Неважно`
+        })
+        .expect(HttpCode.NOT_FOUND);
+    });
+  });
+
+  describe(`API refuses to create a comment if data is invalid`, () => {
+    const invalidComment = {};
+    const app = createAPI();
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app)
+        .post(`/articles/I0Bi8t/comments`)
+        .send(invalidComment);
+    });
+
+    test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+    test(`Comments count isn't changed`, async () => {
+      await request(app)
+        .get(`/articles/I0Bi8t/comments`)
+        .expect((res) => expect(res.body.length).toBe(0));
+    });
+  });
 });
