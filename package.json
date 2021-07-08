@@ -7,8 +7,8 @@
     "test": "npm run eslint && npm run test::rest",
     "test::rest": "jest --verbose ./src/service/api",
     "eslint": "eslint --ext .js src/",
-    "start": "cross-env LOG_LEVEL=error node ./src/service/service.js",
-    "start::debug": "cross-env LOG_LEVEL=debug NODE_ENV=development node ./src/service/service.js",
+    "start": "cross-env LOG_LEVEL=error NODE_ENV=production node ./src/service/service.js",
+    "start::debug": "cross-env LOG_LEVEL=debug node ./src/service/service.js",
     "start-front-server": "nodemon ./src/express/express.js",
     "server": "nodemon ./src/service/service.js --server"
   },
