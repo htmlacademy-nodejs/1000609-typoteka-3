@@ -124,7 +124,7 @@ block content
                     a.preview__breadcrumbs-link(href="#") #{category}
               //.preview__background
               //  img.preview__background-image(src="/img/skyscraper@1x.jpg" width="460" height="240" srcset="/img/skyscraper@1x.jpg 1x, /img/skyscraper@2x.jpg 2x" alt="Фотография небоскреба")
-              time.preview__time(datetime="2019-03-21T20:33") 21.03.2019, 20:33
+              +publicationDate(formatDatetime(post.createdDate), formatDate(post.createdDate))(class='preview__time')
               h3.preview__name
                 a.preview__name-link(href="#") #{post.title}
               p.preview__text #{post.announce}
