@@ -10,6 +10,9 @@ myRouter.get(`/`, async (req, res) => {
   const posts = await api.getPosts();
   res.render(`user/my`, {posts, formatDate, formatDatetime});
 });
-myRouter.get(`/comments`, (req, res) => res.render(`user/comments`));
+myRouter.get(`/comments`, async (req, res) => {
+  const posts = await api.getPosts();
+  res.render(`user/comments`, {posts: posts.slice(0, 3), formatDate, formatDatetime});
+});
 
 module.exports = myRouter;
