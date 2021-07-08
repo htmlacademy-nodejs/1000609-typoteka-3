@@ -25,7 +25,7 @@ block content
         ul.notes__list
           each post in posts
             li.notes__list-item
-              +publicationDate(formatDatetime(post.createdDate), formatDate(post.createdDate))(class='notes__item-time')
+              +publicationDate(formatDatetime(post.createdDate), formatDate(post.createdDate))(class="notes__item-time")
               a.notes__item-text(href="#") #{post.title}
               button.notes__button.button.button--close-item(type="button")
                 span.visually-hidden Закрыть строку списка
