@@ -28,6 +28,13 @@ class API {
     return this._load(`/articles/${id}`);
   }
 
+  createPost(data) {
+    return this._load(`/articles`, {
+      method: `POST`,
+      data
+    });
+  }
+
   getCategories() {
     return this._load(`/categories`);
   }
