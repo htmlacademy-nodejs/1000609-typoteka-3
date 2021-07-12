@@ -154,9 +154,9 @@ describe(`Post`, () => {
 
   describe(`API creates a post if data is valid`, () => {
     const newPost = {
-      title: `Заголовок публикации`,
+      title: `Заголовок публикации, состоящий из 46 символов`,
       createdDate: `2021-01-12 00:00:00`,
-      announce: `Анонс публикации`,
+      announce: `Анонс публикации, состоящий из 42 символов`,
       fullText: `Полный текст публикации`,
       category: [`Категория публикации`]
     };
@@ -225,9 +225,9 @@ describe(`Post`, () => {
 
   describe(`API changes an existent post`, () => {
     const newPost = {
-      title: `Заголовок публикации`,
+      title: `Заголовок публикации, состоящий из 46 символов`,
       createdDate: `2021-01-12 00:00:00`,
-      announce: `Анонс публикации`,
+      announce: `Анонс публикации, состоящий из 42 символов`,
       fullText: `Полный текст публикации`,
       category: [`Категория публикации`]
     };
@@ -251,15 +251,15 @@ describe(`Post`, () => {
     test(`Post is really changed`, async () => {
       await request(app)
         .get(`/articles/NYC34a`)
-        .expect((res) => expect(res.body.title).toBe(`Заголовок публикации`));
+        .expect((res) => expect(res.body.title).toBe(`Заголовок публикации, состоящий из 46 символов`));
     });
   });
 
   describe(`API refuses to change a non-existent post`, () => {
     const newPost = {
-      title: `Заголовок публикации`,
+      title: `Заголовок публикации, состоящий из 46 символов`,
       createdDate: `2021-01-12 00:00:00`,
-      announce: `Анонс публикации`,
+      announce: `Анонс публикации, состоящий из 42 символов`,
       fullText: `Полный текст публикации`,
       category: [`Категория публикации`]
     };
