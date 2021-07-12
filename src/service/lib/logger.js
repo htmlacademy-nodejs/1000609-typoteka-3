@@ -5,7 +5,7 @@ const {Env} = require(`../../constants`);
 
 const LOG_FILE = `./src/service/logs/api.log`;
 
-const isDevMode = process.env.NODE_ENV === Env.DEVELOPMENT;
+const isDevMode = process.env.NODE_ENV !== Env.PRODUCTION;
 const defaultLogLevel = isDevMode ? `debug` : `error`;
 
 const logger = pino({

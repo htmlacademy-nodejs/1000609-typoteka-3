@@ -6,4 +6,11 @@ env:
   node: true
   jest: true
 
+overrides:
+  - files: '*e2e.test.js'
+    rules:
+      max-nested-callbacks:
+        - error
+        - max: 4
+
 extends: 'htmlacademy/node'

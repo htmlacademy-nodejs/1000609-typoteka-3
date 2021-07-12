@@ -5,13 +5,14 @@ const {getLogger} = require(`../lib/logger`);
 const FILE_NAME = `mocks.json`;
 const NO_SUCH_FILE_OR_DIRECTORY_ERROR_CODE = `ENOENT`;
 
-const logger = getLogger({name: `get-mock-data`});
 let data = [];
 
 const getMockData = async () => {
   if (data.length > 0) {
     return data;
   }
+
+  const logger = getLogger({name: `get-mock-data`});
 
   try {
     const fileContent = await fs.readFile(FILE_NAME);

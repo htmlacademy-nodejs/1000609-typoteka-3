@@ -45,8 +45,34 @@ const shuffleAndSlice = (someArray, sliceEnd = someArray.length) => {
   return someArray.slice(0, getRandomInt(1, sliceEnd));
 };
 
+/**
+ * Форматирует строковое представление даты
+ * из вида yyyy-mm-dd HH:MM:ss в dd.mm.yyyy HH:MM
+ *
+ * @param {String} fullDate
+ * @return {String}
+ */
+const formatDate = (fullDate) => {
+  const [date, time] = fullDate.split(` `);
+  const [year, month, day] = date.split(`-`);
+  return `${day}.${month}.${year}, ${time.slice(0, -3)}`;
+};
+
+/**
+ * Форматирует строковое представление даты
+ * из вида yyyy-mm-dd HH:MM:ss в yyyy-mm-ddTHH:MM
+ *
+ * @param {String} fullDate
+ * @return {String}
+ */
+const formatDatetime = (fullDate) => {
+  return fullDate.slice(0, -3).replace(` `, `T`);
+};
+
 module.exports = {
   getRandomInt,
   getRandomDate,
-  shuffleAndSlice
+  shuffleAndSlice,
+  formatDate,
+  formatDatetime
 };

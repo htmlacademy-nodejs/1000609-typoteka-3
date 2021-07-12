@@ -21,11 +21,18 @@ block content
       a.header__search.button.button--search(href="#" aria-label="поиск по сайту")
     main
       section.search-page
-        .search-page__wrapper
+        div(class=`search-page__wrapper${search && !results.length ? " search-page__wrapper--empty" : ""}`)
           h1 Поиск
           .search.search-page__form
-            form(action="#" method="get")
+            form(action="/search" method="get")
               label
-                input(type="text" placeholder="Что ищем?")
+                input(type="text" name="search" placeholder="Что ищем?" value=search)
               button.search__button.button.button--transparent(type="submit") Найти
+            if search && !results.length
+              p.search-page__empty Ничего не нашлось
+            if search && results.length
+              each result in results
+                .search__result
+                  +publicationDate(formatDatetime(result.createdDate), formatDate(result.createdDate))(class="search__date")
+                  a.search__link !{result.title.replace(RegExp(search, "gi"), (substr) => `<b>${substr}</b>`)}
     include partials/footer.pug

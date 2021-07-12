@@ -2,14 +2,14 @@
 
 const express = require(`express`);
 const {ExitCode, HttpCode, API_PREFIX} = require(`../../constants`);
-const getRoutes = require(`../api`);
+const getRoutes = require(`../api/api`);
 const {getLogger} = require(`../lib/logger`);
 
 const DEFAULT_PORT = 3000;
 
 module.exports = {
   name: `--server`,
-  run(args) {
+  async run(args) {
     const [customPort] = args;
     const port = Number.parseInt(customPort, 10) || DEFAULT_PORT;
     const logger = getLogger({name: `api`});
@@ -25,7 +25,7 @@ module.exports = {
       return next();
     });
 
-    app.use(API_PREFIX, getRoutes());
+    app.use(API_PREFIX, await getRoutes());
 
     app.use((req, res) => {
       res
