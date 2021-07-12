@@ -6,10 +6,13 @@ const api = require(`../api`).getAPI();
 const {formatDate, formatDatetime} = require(`../../utils`);
 
 const articlesRouter = new Router();
+articlesRouter.locals = {};
 
 articlesRouter.get(`/add`, async (req, res) => {
+  const {post} = articlesRouter.locals;
+  articlesRouter.locals = {};
   const categories = await api.getCategories();
-  res.render(`articles/new-post`, {categories});
+  res.render(`articles/new-post`, {categories, post});
 });
 articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
   const {body} = req;
@@ -25,6 +28,7 @@ articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
     await api.createPost(postData);
     res.redirect(`/my`);
   } catch (e) {
+    articlesRouter.locals.post = body;
     res.redirect(`back`);
   }
 });
