@@ -40,7 +40,7 @@ class API {
   }
 
   search(query) {
-    return this._load(`/search`, {params: query});
+    return this._load(`/search`, {params: {query}});
   }
 }
 
