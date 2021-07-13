@@ -1,16 +1,23 @@
 'use strict';
 
 const {Router} = require(`express`);
+const session = require(`express-session`);
+const {nanoid} = require(`nanoid`);
 const upload = require(`../middlewares/upload`);
 const api = require(`../api`).getAPI();
 const {formatDate, formatDatetime} = require(`../../utils`);
 
 const articlesRouter = new Router();
-articlesRouter.locals = {};
+
+articlesRouter.use(session({
+  resave: false,
+  saveUninitialized: false,
+  secret: nanoid()
+}));
 
 articlesRouter.get(`/add`, async (req, res) => {
-  const {post} = articlesRouter.locals;
-  articlesRouter.locals = {};
+  const {post} = req.session;
+  delete req.session.post;
   const categories = await api.getCategories();
   res.render(`articles/new-post`, {categories, post});
 });
@@ -28,7 +35,7 @@ articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
     await api.createPost(postData);
     res.redirect(`/my`);
   } catch (e) {
-    articlesRouter.locals.post = body;
+    req.session.post = body;
     res.redirect(`back`);
   }
 });
