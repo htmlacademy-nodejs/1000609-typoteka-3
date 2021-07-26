@@ -41,7 +41,7 @@ const generateMockData = (count, titles, sentences, categories, comments) => (
     id: nanoid(MAX_ID_LENGTH),
     title: titles[getRandomInt(0, titles.length - 1)],
     createdDate: getRandomDate(),
-    announce: shuffleAndSlice(sentences, 5).join(` `),
+    announce: shuffleAndSlice(sentences, 4).join(` `),
     fullText: shuffleAndSlice(sentences).join(` `),
     category: shuffleAndSlice(categories),
     comments: generateComments(getRandomInt(CommentsRestrict.MIN, CommentsRestrict.MAX), comments)

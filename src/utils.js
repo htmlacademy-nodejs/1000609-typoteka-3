@@ -37,12 +37,14 @@ const getRandomDate = () => {
  * @return {Array}
  */
 const shuffleAndSlice = (someArray, sliceEnd = someArray.length) => {
-  for (let i = someArray.length - 1; i > 0; i--) {
+  const result = [...someArray];
+
+  for (let i = result.length - 1; i > 0; i--) {
     const randomPosition = Math.floor(Math.random() * i);
-    [someArray[i], someArray[randomPosition]] = [someArray[randomPosition], someArray[i]];
+    [result[i], result[randomPosition]] = [result[randomPosition], result[i]];
   }
 
-  return someArray.slice(0, getRandomInt(1, sliceEnd));
+  return result.slice(0, getRandomInt(1, sliceEnd));
 };
 
 /**

@@ -44,7 +44,7 @@ const generateMockData = (count, userCount, titles, sentences, categories, comme
 
     return {
       title: titles[getRandomInt(0, titles.length - 1)],
-      announce: shuffleAndSlice(sentences, 5).join(` `),
+      announce: shuffleAndSlice(sentences, 4).join(` `),
       fullText: Math.random() > 0.1 ? shuffleAndSlice(sentences).join(` `) : null,
       category: shuffleAndSlice(categories).map((category) => ({postId, categoryId: categories.indexOf(category) + 1})),
       comments: generateComments(getRandomInt(CommentsRestrict.MIN, CommentsRestrict.MAX), postId, userCount, comments),
