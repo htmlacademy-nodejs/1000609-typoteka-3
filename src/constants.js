@@ -2,6 +2,10 @@
 
 const DEFAULT_COMMAND = `--help`;
 const API_PREFIX = `/api`;
+const FILE_TITLES_PATH = `./data/titles.txt`;
+const FILE_SENTENCES_PATH = `./data/sentences.txt`;
+const FILE_CATEGORIES_PATH = `./data/categories.txt`;
+const FILE_COMMENTS_PATH = `./data/comments.txt`;
 const USER_ARGV_INDEX = 2;
 const MAX_ID_LENGTH = 6;
 
@@ -26,6 +30,10 @@ const HttpCode = {
 module.exports = {
   DEFAULT_COMMAND,
   API_PREFIX,
+  FILE_TITLES_PATH,
+  FILE_SENTENCES_PATH,
+  FILE_CATEGORIES_PATH,
+  FILE_COMMENTS_PATH,
   USER_ARGV_INDEX,
   MAX_ID_LENGTH,
   Env,

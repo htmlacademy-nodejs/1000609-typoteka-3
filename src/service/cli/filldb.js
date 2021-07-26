@@ -2,30 +2,15 @@
 
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
-const {ExitCode} = require(`../../constants`);
-const {getRandomInt, shuffleAndSlice} = require(`../../utils.js`);
+const {FILE_TITLES_PATH, FILE_SENTENCES_PATH, FILE_CATEGORIES_PATH, FILE_COMMENTS_PATH, ExitCode} = require(`../../constants`);
+const {getRandomInt, shuffleAndSlice, readContent} = require(`../../utils.js`);
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `fill-db.sql`;
 
-const FILE_TITLES_PATH = `./data/titles.txt`;
-const FILE_SENTENCES_PATH = `./data/sentences.txt`;
-const FILE_CATEGORIES_PATH = `./data/categories.txt`;
-const FILE_COMMENTS_PATH = `./data/comments.txt`;
-
 const CommentsRestrict = {
   MIN: 0,
   MAX: 4
-};
-
-const readContent = async (filePath) => {
-  try {
-    const content = await fs.readFile(filePath, `utf8`);
-    return content.trim().split(`\n`);
-  } catch (err) {
-    console.error(chalk.red(err));
-    return [];
-  }
 };
 
 const generateComments = (count, postId, userCount, comments) => (

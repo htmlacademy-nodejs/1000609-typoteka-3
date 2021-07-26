@@ -1,5 +1,8 @@
 'use strict';
 
+const fs = require(`fs`).promises;
+const chalk = require(`chalk`);
+
 /**
  * Возвращает случайное число в диапазоне
  * `min` и `max`.
@@ -48,6 +51,23 @@ const shuffleAndSlice = (someArray, sliceEnd = someArray.length) => {
 };
 
 /**
+ * Возвращает массив считанных строк
+ * из файла по переданному пути
+ *
+ * @param {String} filePath
+ * @return {Array}
+ */
+const readContent = async (filePath) => {
+  try {
+    const content = await fs.readFile(filePath, `utf8`);
+    return content.trim().split(`\n`);
+  } catch (err) {
+    console.error(chalk.red(err));
+    return [];
+  }
+};
+
+/**
  * Форматирует строковое представление даты
  * из вида yyyy-mm-dd HH:MM:ss в dd.mm.yyyy HH:MM
  *
@@ -75,6 +95,7 @@ module.exports = {
   getRandomInt,
   getRandomDate,
   shuffleAndSlice,
+  readContent,
   formatDate,
   formatDatetime
 };
