@@ -4,7 +4,7 @@ const help = require(`./help`);
 const generate = require(`./generate`);
 const version = require(`./version`);
 const server = require(`./server`);
-const fill = require(`src/service/cli/fill`);
+const fill = require(`./fill`);
 
 const Cli = {
   [generate.name]: generate,
