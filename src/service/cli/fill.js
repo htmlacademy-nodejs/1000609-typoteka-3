@@ -40,7 +40,7 @@ const generateMockData = (count, userCount, titles, sentences, categories, comme
 );
 
 module.exports = {
-  name: `--filldb`,
+  name: `--fill`,
   async run(args) {
     const count = Number.parseInt(args[0], 10) || DEFAULT_COUNT;
     const titles = await readContent(FILE_TITLES_PATH);

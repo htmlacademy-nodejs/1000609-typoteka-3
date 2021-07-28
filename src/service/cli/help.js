@@ -10,7 +10,7 @@ const text = `${chalk.cyan(`Программа запускает http-серв�
     ${chalk.cyanBright.bold(`--version`)}:            ${chalk.green(`выводит номер версии`)}
     ${chalk.cyanBright.bold(`--help`)}:               ${chalk.green(`печатает этот текст`)}
     ${chalk.cyanBright.bold(`--generate <count>`)}:   ${chalk.green(`формирует файл mocks.json`)}
-    ${chalk.cyanBright.bold(`--filldb <count>`)}:     ${chalk.green(`формирует файл fill-db.sql`)}
+    ${chalk.cyanBright.bold(`--fill <count>`)}:       ${chalk.green(`формирует файл fill-db.sql`)}
     ${chalk.cyanBright.bold(`--server <port>`)}:      ${chalk.green(`запускает http-сервер`)}`;
 
 module.exports = {
