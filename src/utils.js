@@ -63,14 +63,19 @@ const shuffleAndSlice = (someArray, sliceEnd = someArray.length) => {
  * из файла по переданному пути
  *
  * @param {String} filePath
+ * @param {pino.Logger} [logger]
  * @return {Array}
  */
-const readContent = async (filePath) => {
+const readContent = async (filePath, logger) => {
   try {
     const content = await fs.readFile(filePath, `utf8`);
     return content.trim().split(`\n`);
   } catch (err) {
-    console.error(chalk.red(err));
+    if (logger) {
+      logger.error(`Error when reading file: ${err.message}`);
+    } else {
+      console.error(chalk.red(err));
+    }
     return [];
   }
 };

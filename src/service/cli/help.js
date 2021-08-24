@@ -2,7 +2,7 @@
 
 const chalk = require(`chalk`);
 
-const text = `${chalk.cyan(`Программа запускает http-сервер и формирует файл с данными для API.`)}
+const text = `${chalk.cyan(`Программа запускает http-сервер и формирует моковые данные для API.`)}
 
     ${chalk.bold(`Гайд`)}:
     ${chalk.cyanBright(`service.js <command>`)}
@@ -11,6 +11,7 @@ const text = `${chalk.cyan(`Программа запускает http-серв�
     ${chalk.cyanBright.bold(`--help`)}:               ${chalk.green(`печатает этот текст`)}
     ${chalk.cyanBright.bold(`--generate <count>`)}:   ${chalk.green(`формирует файл mocks.json`)}
     ${chalk.cyanBright.bold(`--fill <count>`)}:       ${chalk.green(`формирует файл fill-db.sql`)}
+    ${chalk.cyanBright.bold(`--filldb <count>`)}:     ${chalk.green(`заполняет таблицы в БД начальными данными`)}
     ${chalk.cyanBright.bold(`--server <port>`)}:      ${chalk.green(`запускает http-сервер`)}`;
 
 module.exports = {
