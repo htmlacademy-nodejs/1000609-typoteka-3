@@ -3,7 +3,7 @@
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
 const {FILE_TITLES_PATH, FILE_SENTENCES_PATH, FILE_CATEGORIES_PATH, FILE_COMMENTS_PATH, ExitCode} = require(`../../constants`);
-const {getRandomInt, shuffleAndSlice, readContent} = require(`../../utils.js`);
+const {getRandomInt, getPictureFileName, shuffleAndSlice, readContent} = require(`../../utils.js`);
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `fill-db.sql`;
@@ -20,8 +20,6 @@ const generateComments = (count, postId, userCount, comments) => (
     userId: getRandomInt(1, userCount)
   }))
 );
-
-const getPictureFileName = (number) => `item${number.toString().padStart(2, `0`)}.jpg`;
 
 const generateMockData = (count, userCount, titles, sentences, categories, comments) => (
   Array.from({length: count}, (_, index) => {

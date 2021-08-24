@@ -32,6 +32,14 @@ const getRandomDate = () => {
 };
 
 /**
+ * Возвращает отформатированное название фотографии публикации
+ *
+ * @param {Number} number
+ * @return {String}
+ */
+const getPictureFileName = (number) => `item${number.toString().padStart(2, `0`)}.jpg`;
+
+/**
  * Возвращает случайно обрезанный перетасованный
  * по алгоритму Фишера—Йетса массив
  *
@@ -94,6 +102,7 @@ const formatDatetime = (fullDate) => {
 module.exports = {
   getRandomInt,
   getRandomDate,
+  getPictureFileName,
   shuffleAndSlice,
   readContent,
   formatDate,
