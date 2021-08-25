@@ -1,43 +1,49 @@
 'use strict';
 
-const {nanoid} = require(`nanoid`);
-const {MAX_ID_LENGTH} = require(`../../constants`);
+const Alias = require(`../models/alias`);
 
 class PostService {
-  constructor(posts) {
-    this._posts = posts;
+  constructor(sequelize) {
+    this._Post = sequelize.models.Post;
   }
 
-  create(post) {
-    const newPost = Object.assign({id: nanoid(MAX_ID_LENGTH), comments: []}, post);
-
-    this._posts.push(newPost);
-    return newPost;
+  async create(postData) {
+    const post = await this._Post.create(postData);
+    await post.addCategories(postData.categories);
+    return post.get();
   }
 
-  findAll() {
-    return this._posts;
+  async findAll(needCategories, needComments) {
+    const include = [];
+
+    if (needCategories) {
+      include.push(Alias.CATEGORIES);
+    }
+
+    if (needComments) {
+      include.push(Alias.COMMENTS);
+    }
+
+    const posts = await this._Post.findAll({include});
+    return posts.map((post) => post.get());
   }
 
   findOne(id) {
-    return this._posts.find((item) => item.id === id);
+    return this._Post.findByPk(id, {include: [Alias.CATEGORIES, Alias.COMMENTS]});
   }
 
-  update(id, post) {
-    const oldPost = this._posts.find((item) => item.id === id);
-
-    return Object.assign(oldPost, post);
+  async update(id, post) {
+    const [affectedRows] = await this._Post.update(post, {
+      where: {id}
+    });
+    return !!affectedRows;
   }
 
-  drop(id) {
-    const post = this._posts.find((item) => item.id === id);
-
-    if (!post) {
-      return null;
-    }
-
-    this._posts = this._posts.filter((item) => item.id !== id);
-    return post;
+  async drop(id) {
+    const deletedRows = await this._Post.destroy({
+      where: {id}
+    });
+    return !!deletedRows;
   }
 }
 
