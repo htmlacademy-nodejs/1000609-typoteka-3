@@ -11,14 +11,16 @@ module.exports = (app, postService, commentService) => {
 
   app.use(`/articles`, route);
 
-  route.get(`/`, (req, res) => {
-    const posts = postService.findAll();
-    res.status(HttpCode.OK).json(posts);
+  route.get(`/`, async (req, res) => {
+    const {categories, comments} = req.query;
+    const posts = await postService.findAll(categories, comments);
+    res.status(HttpCode.OK)
+      .json(posts);
   });
 
-  route.get(`/:articleId`, (req, res) => {
+  route.get(`/:articleId`, async (req, res) => {
     const {articleId: postId} = req.params;
-    const post = postService.findOne(postId);
+    const post = await postService.findOne(postId);
 
     if (!post) {
       return res.status(HttpCode.NOT_FOUND)
@@ -29,66 +31,63 @@ module.exports = (app, postService, commentService) => {
       .json(post);
   });
 
-  route.post(`/`, postValidator, (req, res) => {
-    const post = postService.create(req.body);
+  route.post(`/`, postValidator, async (req, res) => {
+    const post = await postService.create(req.body);
 
     return res.status(HttpCode.CREATED)
       .json(post);
   });
 
-  route.put(`/:articleId`, postValidator, (req, res) => {
+  route.put(`/:articleId`, postValidator, async (req, res) => {
     const {articleId: postId} = req.params;
-    const existPost = postService.findOne(postId);
+    const updated = await postService.update(postId, req.body);
 
-    if (!existPost) {
+    if (!updated) {
       return res.status(HttpCode.NOT_FOUND)
         .send(`Not found with ${postId}`);
     }
 
-    const updatedPost = postService.update(postId, req.body);
-
     return res.status(HttpCode.OK)
-      .json(updatedPost);
+      .send(`Updated`);
   });
 
-  route.delete(`/:articleId`, (req, res) => {
+  route.delete(`/:articleId`, async (req, res) => {
     const {articleId: postId} = req.params;
-    const post = postService.drop(postId);
+    const deleted = await postService.drop(postId);
 
-    if (!post) {
+    if (!deleted) {
       return res.status(HttpCode.NOT_FOUND)
         .send(`Not found`);
     }
 
     return res.status(HttpCode.OK)
-      .json(post);
+      .send(`Deleted`);
   });
 
-  route.get(`/:articleId/comments`, postExist(postService), (req, res) => {
-    const {post} = res.locals;
-    const comments = commentService.findAll(post);
+  route.get(`/:articleId/comments`, postExist(postService), async (req, res) => {
+    const {articleId: postId} = req.params;
+    const comments = await commentService.findAll(postId);
 
     res.status(HttpCode.OK)
       .json(comments);
   });
 
-  route.delete(`/:articleId/comments/:commentId`, postExist(postService), (req, res) => {
-    const {post} = res.locals;
+  route.delete(`/:articleId/comments/:commentId`, postExist(postService), async (req, res) => {
     const {commentId} = req.params;
-    const deletedComment = commentService.drop(post, commentId);
+    const deleted = await commentService.drop(commentId);
 
-    if (!deletedComment) {
+    if (!deleted) {
       return res.status(HttpCode.NOT_FOUND)
         .send(`Not found`);
     }
 
     return res.status(HttpCode.OK)
-      .json(deletedComment);
+      .send(`Deleted`);
   });
 
-  route.post(`/:articleId/comments`, [postExist(postService), commentValidator], (req, res) => {
-    const {post} = res.locals;
-    const comment = commentService.create(post, req.body);
+  route.post(`/:articleId/comments`, [postExist(postService), commentValidator], async (req, res) => {
+    const {articleId: postId} = req.params;
+    const comment = await commentService.create(postId, req.body);
 
     return res.status(HttpCode.CREATED)
       .json(comment);
