@@ -48,7 +48,7 @@ block content
                   .comments__text
                     .comments__head
                       p Евгений Петров •
-                      time.comments__date(datetime="2019-03-21T20:33") 21.03.2019, 20:33
+                      +publicationDate(formatDatetime(comment.createdAt), formatDate(comment.createdAt))(class="comments__date")
                     p.comments__message #{comment.text}
             .comments__footer.comments__footer--user
               form(action="#" method="POST")
