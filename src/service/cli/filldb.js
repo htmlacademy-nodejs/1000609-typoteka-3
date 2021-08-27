@@ -4,8 +4,7 @@ const {FILE_TITLES_PATH, FILE_SENTENCES_PATH, FILE_CATEGORIES_PATH, FILE_COMMENT
 const {getRandomInt, getRandomDate, getPictureFileName, shuffleAndSlice, readContent} = require(`../../utils.js`);
 const {getLogger} = require(`../lib/logger`);
 const getSequelize = require(`../lib/sequelize`);
-const defineModels = require(`../models/defineModels`);
-const Alias = require(`../models/alias`);
+const initDatabase = require(`../lib/init-db`);
 
 const DEFAULT_COUNT = 1;
 
@@ -49,25 +48,14 @@ module.exports = {
 
     logger.info(`Connection to database established`);
 
-    const {Category, Post} = defineModels(sequelize);
-
-    await sequelize.sync({force: true});
-
     const titles = await readContent(FILE_TITLES_PATH, logger);
     const sentences = await readContent(FILE_SENTENCES_PATH, logger);
     const categories = await readContent(FILE_CATEGORIES_PATH, logger);
     const comments = await readContent(FILE_COMMENTS_PATH, logger);
 
-    const categoryModels = await Category.bulkCreate(
-        categories.map((item) => ({name: item}))
-    );
-
     const count = Number.parseInt(args[0], 10) || DEFAULT_COUNT;
-    const posts = generateMockData(count, titles, sentences, categoryModels, comments);
-    const postPromises = posts.map(async (post) => {
-      const postModel = await Post.create(post, {include: [Alias.COMMENTS]});
-      await postModel.addCategories(post.categories);
-    });
-    await Promise.all(postPromises);
+    const posts = generateMockData(count, titles, sentences, categories, comments);
+
+    return initDatabase(sequelize, {posts, categories});
   }
 };
