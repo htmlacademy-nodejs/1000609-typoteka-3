@@ -44,7 +44,7 @@ articlesRouter.get(`/:id`, async (req, res) => {
   const {id} = req.params;
   const [post, categories] = await Promise.all([
     api.getPost(id),
-    api.getCategories()
+    api.getCategories(true)
   ]);
   res.render(`articles/post`, {post, categories, formatDate, formatDatetime});
 });
@@ -52,7 +52,7 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
   const {id} = req.params;
   const [post, categories] = await Promise.all([
     api.getPost(id),
-    api.getCategories()
+    api.getCategories(true)
   ]);
   res.render(`articles/post`, {post, categories, formatDate, formatDatetime});
 });
