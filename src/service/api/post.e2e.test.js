@@ -2,82 +2,92 @@
 
 const express = require(`express`);
 const request = require(`supertest`);
+const Sequelize = require(`sequelize`);
 
 const {HttpCode} = require(`../../constants`);
+const initDB = require(`../lib/init-db`);
 const post = require(`./post`);
 const DataService = require(`../data-service/post`);
 const CommentService = require(`../data-service/comment`);
 
-const mockData = [
+const mockCategories = [
+  `Деревья`,
+  `За жизнь`,
+  `Без рамки`,
+  `Разное`,
+  `IT`,
+  `Музыка`,
+  `Кино`,
+  `Программирование`,
+  `Железо`
+];
+
+const mockPosts = [
   {
-    id: `7CcE77`,
     title: `Как перестать беспокоиться и начать жить`,
-    createdDate: `2021-04-28 01:21:31`,
-    announce: `Маленькими шагами. Стоит только немного постараться и запастись книгами. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете. Не стоит идти в программисты, если вам нравятся только игры.`,
+    createdAt: `2021-04-28 01:21:31`,
+    picture: `item01.jpg`,
+    announcement: `Маленькими шагами. Стоит только немного постараться и запастись книгами. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете. Не стоит идти в программисты, если вам нравятся только игры.`,
     fullText: `Для начала просто соберитесь. Это один из лучших рок-музыкантов. Рок-музыка всегда ассоциировалась с протестами. Он обязательно понравится геймерам со стажем. Альбом стал настоящим открытием года. Помните, небольшое количество ежедневных упражнений лучше, чем один раз, но много. Ёлки — это не просто красивое дерево. Возьмите книгу новую книгу и закрепите все упражнения на практике. Он написал больше 30 хитов. Мощные гитарные рифы и скоростные соло-партии не дадут заскучать. Игры и программирование разные вещи. Достичь успеха помогут ежедневные повторения. Процессор заслуживает особого внимания. Маленькими шагами.`,
-    category: [`Железо`, `IT`, `Программирование`],
+    categories: [`Железо`, `IT`, `Программирование`],
     comments: [
       {
-        id: `QeF8QN`,
         text: `Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Планируете записать видосик на эту тему? Хочу такую же футболку :-) Давно не пользуюсь стационарными компьютерами. Ноутбуки победили.`
       }, {
-        id: `dVKa-0`,
         text: `Хочу такую же футболку :-) Мне кажется или я уже читал это где-то? Планируете записать видосик на эту тему?`
       }, {
-        id: `w_2OYi`,
         text: `Согласен с автором!`
       }
     ]
   }, {
-    id: `EP8PdB`,
     title: `Учим HTML и CSS`,
-    createdDate: `2021-04-11 17:21:13`,
-    announce: `Как начать действовать? Достичь успеха помогут ежедневные повторения. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете. Маленькими шагами.`,
+    createdAt: `2021-04-11 17:21:13`,
+    picture: `item01.jpg`,
+    announcement: `Как начать действовать? Достичь успеха помогут ежедневные повторения. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете. Маленькими шагами.`,
     fullText: `Он написал больше 30 хитов. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете. Вы можете достичь всего. Освоить вёрстку несложно. Просто действуйте.`,
-    category: [`Деревья`, `Кино`, `За жизнь`, `Программирование`],
+    categories: [`Деревья`, `Кино`, `За жизнь`, `Программирование`],
     comments: []
   }, {
-    id: `NYC34a`,
     title: `Рок — это протест`,
-    createdDate: `2021-06-20 17:41:29`,
-    announce: `Возьмите книгу новую книгу и закрепите все упражнения на практике.`,
+    createdAt: `2021-06-20 17:41:29`,
+    picture: `item01.jpg`,
+    announcement: `Возьмите книгу новую книгу и закрепите все упражнения на практике.`,
     fullText: `Простые ежедневные упражнения помогут достичь успеха. Программировать не настолько сложно, как об этом говорят. Это один из лучших рок-музыкантов. Освоить вёрстку несложно. Рок-музыка всегда ассоциировалась с протестами. Мощные гитарные рифы и скоростные соло-партии не дадут заскучать. Возьмите книгу новую книгу и закрепите все упражнения на практике. Для начала просто соберитесь. Так ли это на самом деле? Бороться с прокрастинацией несложно.`,
-    category: [`Разное`, `Без рамки`],
+    categories: [`Разное`, `Без рамки`],
     comments: [
       {
-        id: `GTRSGu`,
         text: `Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Это где ж такие красоты? Совсем немного... Хочу такую же футболку :-)`
       }
     ]
   }, {
-    id: `x1P-iD`,
     title: `Как перестать беспокоиться и начать жить`,
-    createdDate: `2021-04-04 02:48:49`,
-    announce: `Собрать камни бесконечности легко, если вы прирожденный герой. Он обязательно понравится геймерам со стажем. Этот смартфон — настоящая находка. Золотое сечение — соотношение двух величин, гармоническая пропорция. Просто действуйте.`,
+    createdAt: `2021-04-04 02:48:49`,
+    picture: null,
+    announcement: `Собрать камни бесконечности легко, если вы прирожденный герой. Он обязательно понравится геймерам со стажем. Этот смартфон — настоящая находка. Золотое сечение — соотношение двух величин, гармоническая пропорция. Просто действуйте.`,
     fullText: `Рок-музыка всегда ассоциировалась с протестами. Собрать камни бесконечности легко, если вы прирожденный герой. Вы можете достичь всего. Просто действуйте. Для начала просто соберитесь. Так ли это на самом деле? Бороться с прокрастинацией несложно. Первая большая ёлка была установлена только в 1938 году. Как начать действовать? Ёлки — это не просто красивое дерево. Этот смартфон — настоящая находка. Он написал больше 30 хитов.`,
-    category: [`Музыка`, `Кино`, `Разное`],
+    categories: [`Музыка`, `Кино`, `Разное`],
     comments: [
       {
-        id: `iQfmHD`,
         text: `Это где ж такие красоты? Согласен с автором! Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Мне кажется или я уже читал это где-то? Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Планируете записать видосик на эту тему? Хочу такую же футболку :-)`
       }
     ]
   }, {
-    id: `I0Bi8t`,
     title: `Самый лучший музыкальный альбом этого года`,
-    createdDate: `2021-05-27 15:45:12`,
-    announce: `Это прочная древесина. Не стоит идти в программисты, если вам нравятся только игры. Ёлки — это не просто красивое дерево. Собрать камни бесконечности легко, если вы прирожденный герой.`,
-    fullText: `Вы можете достичь всего. Просто действуйте. Альбом стал настоящим открытием года. Он написал больше 30 хитов. Достичь успеха помогут ежедневные повторения. Как начать действовать? Так ли это на самом деле? Освоить вёрстку несложно.`,
-    category: [`Программирование`, `Без рамки`, `За жизнь`, `IT`, `Разное`, `Железо`, `Деревья`],
+    createdAt: `2021-05-27 15:45:12`,
+    picture: null,
+    announcement: `Это прочная древесина. Не стоит идти в программисты, если вам нравятся только игры. Ёлки — это не просто красивое дерево. Собрать камни бесконечности легко, если вы прирожденный герой.`,
+    fullText: null,
+    categories: [`Программирование`, `Без рамки`, `За жизнь`, `IT`, `Разное`, `Железо`, `Деревья`],
     comments: []
   }
 ];
 
-const createAPI = (data = mockData) => {
+const createAPI = async (posts = mockPosts) => {
+  const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
+  await initDB(mockDB, {categories: mockCategories, posts});
   const app = express();
-  const clonedData = JSON.parse(JSON.stringify(data));
   app.use(express.json());
-  post(app, new DataService(clonedData), new CommentService());
+  post(app, new DataService(mockDB), new CommentService(mockDB));
   return app;
 };
 
@@ -86,7 +96,7 @@ describe(`Post`, () => {
     let response;
 
     beforeAll(async () => {
-      const app = createAPI();
+      const app = await createAPI();
 
       response = await request(app)
         .get(`/articles`);
@@ -95,15 +105,17 @@ describe(`Post`, () => {
     test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
     test(`Content-Type application/json`, () => expect(response.type).toBe(`application/json`));
     test(`Returns a list of 5 posts`, () => expect(response.body.length).toBe(5));
-    test(`First post's id equals "7CcE77"`, () => expect(response.body[0].id).toBe(`7CcE77`));
+    test(`First post's title equals "Как перестать беспокоиться и начать жить"`, () => {
+      expect(response.body[0].title).toBe(`Как перестать беспокоиться и начать жить`);
+    });
   });
 
   describe(`API handles the situation when the are no posts`, () => {
     let response;
 
     beforeAll(async () => {
-      const mockEmptyData = [];
-      const app = createAPI(mockEmptyData);
+      const mockEmptyPosts = [];
+      const app = await createAPI(mockEmptyPosts);
 
       response = await request(app)
         .get(`/articles`);
@@ -117,22 +129,24 @@ describe(`Post`, () => {
     let response;
 
     beforeAll(async () => {
-      const app = createAPI();
+      const app = await createAPI();
 
       response = await request(app)
-        .get(`/articles/EP8PdB`);
+        .get(`/articles/2`);
     });
 
     test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
     test(`Content-Type application/json`, () => expect(response.type).toBe(`application/json`));
     test(`Returns an object with correct structure`, () => expect(response.body).toEqual(
         expect.objectContaining({
-          id: expect.any(String),
+          id: expect.any(Number),
           title: expect.any(String),
-          createdDate: expect.any(String),
-          announce: expect.any(String),
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+          picture: expect.any(String),
+          announcement: expect.any(String),
           fullText: expect.any(String),
-          category: expect.any(Array),
+          categories: expect.any(Array),
           comments: expect.any(Array)
         })
     ));
@@ -143,10 +157,10 @@ describe(`Post`, () => {
     let response;
 
     beforeAll(async () => {
-      const app = createAPI();
+      const app = await createAPI();
 
       response = await request(app)
-        .get(`/articles/NOEXST`);
+        .get(`/articles/20`);
     });
 
     test(`Status code 404`, () => expect(response.statusCode).toBe(HttpCode.NOT_FOUND));
@@ -155,17 +169,18 @@ describe(`Post`, () => {
   describe(`API creates a post if data is valid`, () => {
     const newPost = {
       title: `Заголовок публикации, состоящий из 46 символов`,
-      createdDate: `2021-01-12 00:00:00`,
-      announce: `Анонс публикации, состоящий из 42 символов`,
+      createdAt: `2021-01-12 00:00:00`,
+      picture: `picture.jpg`,
+      announcement: `Анонс публикации, состоящий из 42 символов`,
       fullText: `Полный текст публикации`,
-      category: [`Категория публикации`]
+      categories: [1]
     };
 
     let response;
     let app;
 
     beforeAll(async () => {
-      app = createAPI();
+      app = await createAPI();
 
       response = await request(app)
         .post(`/articles`)
@@ -174,9 +189,6 @@ describe(`Post`, () => {
 
     test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
     test(`Content-Type application.json`, () => expect(response.type).toBe(`application/json`));
-    test(`Returns post created`, () => expect(response.body).toEqual(
-        expect.objectContaining(newPost)
-    ));
     test(`Posts count is changed`, async () => {
       await request(app)
         .get(`/articles`)
@@ -187,16 +199,17 @@ describe(`Post`, () => {
   describe(`API refuses to create a post if data is invalid`, () => {
     const newPost = {
       title: `Заголовок публикации`,
-      createdDate: `2021-01-12 00:00:00`,
-      announce: `Анонс публикации`,
+      createdAt: `2021-01-12 00:00:00`,
+      picture: `picture.jpg`,
+      announcement: `Анонс публикации`,
       fullText: `Полный текст публикации`,
-      category: [`Категория публикации`]
+      categories: [1, 2]
     };
 
     let app;
 
     beforeAll(async () => {
-      app = createAPI();
+      app = await createAPI();
     });
 
     test(`Without any required property response code is 400`, async () => {
@@ -226,31 +239,28 @@ describe(`Post`, () => {
   describe(`API changes an existent post`, () => {
     const newPost = {
       title: `Заголовок публикации, состоящий из 46 символов`,
-      createdDate: `2021-01-12 00:00:00`,
-      announce: `Анонс публикации, состоящий из 42 символов`,
-      fullText: `Полный текст публикации`,
-      category: [`Категория публикации`]
+      createdAt: `2021-01-12 00:00:00`,
+      picture: `picture.jpg`,
+      announcement: `Анонс публикации, состоящий из 42 символов`,
+      fullText: null,
+      categories: [2]
     };
 
     let app;
     let response;
 
     beforeAll(async () => {
-      app = createAPI();
+      app = await createAPI();
 
       response = await request(app)
-        .put(`/articles/NYC34a`)
+        .put(`/articles/2`)
         .send(newPost);
     });
 
     test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
-    test(`Content-Type application/json`, () => expect(response.type).toBe(`application/json`));
-    test(`Returns changed post`, () => expect(response.body).toEqual(
-        expect.objectContaining(newPost)
-    ));
     test(`Post is really changed`, async () => {
       await request(app)
-        .get(`/articles/NYC34a`)
+        .get(`/articles/2`)
         .expect((res) => expect(res.body.title).toBe(`Заголовок публикации, состоящий из 46 символов`));
     });
   });
@@ -258,20 +268,21 @@ describe(`Post`, () => {
   describe(`API refuses to change a non-existent post`, () => {
     const newPost = {
       title: `Заголовок публикации, состоящий из 46 символов`,
-      createdDate: `2021-01-12 00:00:00`,
-      announce: `Анонс публикации, состоящий из 42 символов`,
+      createdAt: `2021-01-12 00:00:00`,
+      picture: `picture.jpg`,
+      announcement: `Анонс публикации, состоящий из 42 символов`,
       fullText: `Полный текст публикации`,
-      category: [`Категория публикации`]
+      categories: [3]
     };
 
     let app;
     let response;
 
     beforeAll(async () => {
-      app = createAPI();
+      app = await createAPI();
 
       response = await request(app)
-        .put(`/articles/NOEXST`)
+        .put(`/articles/20`)
         .send(newPost);
     });
 
@@ -281,16 +292,17 @@ describe(`Post`, () => {
   describe(`API refuses to change an existent post if data is invalid`, () => {
     const invalidPost = {
       title: `Заголовок публикации`,
-      createdDate: `2021-04-07 00:00:00`,
-      announce: `В которой есть ошибка`,
-      fullText: `Отсутствует поле category`
+      createdAt: `2021-04-07 00:00:00`,
+      picture: null,
+      announcement: `В которой есть ошибка`,
+      fullText: `Отсутствует поле categories`
     };
 
     test(`Status code 400`, async () => {
-      const app = createAPI();
+      const app = await createAPI();
 
       await request(app)
-        .put(`/articles/NYC34a`)
+        .put(`/articles/3`)
         .send(invalidPost)
         .expect(HttpCode.BAD_REQUEST);
     });
@@ -301,15 +313,13 @@ describe(`Post`, () => {
     let response;
 
     beforeAll(async () => {
-      app = createAPI();
+      app = await createAPI();
 
       response = await request(app)
-        .delete(`/articles/x1P-iD`);
+        .delete(`/articles/1`);
     });
 
     test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
-    test(`Content-Type application/json`, () => expect(response.type).toBe(`application/json`));
-    test(`Returns deleted post`, () => expect(response.body.id).toBe(`x1P-iD`));
     test(`Posts count is 4 now`, async () => {
       await request(app)
         .get(`/articles`)
@@ -319,10 +329,10 @@ describe(`Post`, () => {
 
   describe(`API refuses to delete a non-existent post`, () => {
     test(`Status code 404`, async () => {
-      const app = createAPI();
+      const app = await createAPI();
 
       await request(app)
-        .delete(`/articles/NOEXST`)
+        .delete(`/articles/20`)
         .expect(HttpCode.NOT_FOUND);
     });
   });
@@ -332,22 +342,22 @@ describe(`Post`, () => {
     let response;
 
     beforeAll(async () => {
-      app = createAPI();
+      app = await createAPI();
 
       response = await request(app)
-        .get(`/articles/x1P-iD/comments`);
+        .get(`/articles/4/comments`);
     });
 
     test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
     test(`Content-Type application/json`, () => expect(response.type).toBe(`application/json`));
     test(`Returns a list of 1 comments`, () => expect(response.body.length).toBe(1));
-    test(`First comment's id is "iQfmHD"`, () => expect(response.body[0].id).toBe(`iQfmHD`));
-    test(`Comments have correct structure`, () => expect(response.body[0]).toEqual(
-        expect.objectContaining({
-          id: expect.any(String),
-          text: expect.any(String)
-        })
-    ));
+    test(`First comment's text is "Это где ж такие красоты? Согласен с автором! Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Мне кажется или я уже читал это где-то? Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Планируете записать видосик на эту тему? Хочу такую же футболку :-)"`, () => {
+      expect(response.body[0].text).toBe(`Это где ж такие красоты? Согласен с автором! Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Мне кажется или я уже читал это где-то? Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Планируете записать видосик на эту тему? Хочу такую же футболку :-)`);
+    });
+    test(`Comments have correct structure`, () => {
+      expect(response.body[0]).toHaveProperty(`id`);
+      expect(response.body[0]).toHaveProperty(`text`);
+    });
   });
 
   describe(`API correctly deletes a comment`, () => {
@@ -355,38 +365,36 @@ describe(`Post`, () => {
     let response;
 
     beforeAll(async () => {
-      app = createAPI();
+      app = await createAPI();
 
       response = await request(app)
-        .delete(`/articles/7CcE77/comments/dVKa-0`);
+        .delete(`/articles/1/comments/2`);
     });
 
     test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
-    test(`Content-Type application/json`, () => expect(response.type).toBe(`application/json`));
-    test(`Returns deleted comment`, () => expect(response.body.id).toBe(`dVKa-0`));
     test(`Comments count is 2 now`, async () => {
       await request(app)
-        .get(`/articles/7CcE77/comments`)
+        .get(`/articles/1/comments`)
         .expect((res) => expect(res.body.length).toBe(2));
     });
   });
 
   describe(`API refuses to delete a non-existent comment`, () => {
     test(`Status code 404`, async () => {
-      const app = createAPI();
+      const app = await createAPI();
 
       await request(app)
-        .delete(`/articles/7CcE77/comments/NOEXST`)
+        .delete(`/articles/1/comments/100`)
         .expect(HttpCode.NOT_FOUND);
     });
   });
 
   describe(`API refuses to delete a comment to a non-existent post`, () => {
     test(`Status code 404`, async () => {
-      const app = createAPI();
+      const app = await createAPI();
 
       await request(app)
-        .delete(`/articles/NOEXST/comments/dVKa-0`)
+        .delete(`/articles/20/comments/1`)
         .expect(HttpCode.NOT_FOUND);
     });
   });
@@ -400,31 +408,28 @@ describe(`Post`, () => {
     let response;
 
     beforeAll(async () => {
-      app = createAPI();
+      app = await createAPI();
 
       response = await request(app)
-        .post(`/articles/I0Bi8t/comments`)
+        .post(`/articles/5/comments`)
         .send(newComment);
     });
 
     test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
     test(`Content-Type application/json`, () => expect(response.type).toBe(`application/json`));
-    test(`Returns comment created`, () => expect(response.body).toEqual(
-        expect.objectContaining(newComment)
-    ));
     test(`Comments count is changed`, async () => {
       await request(app)
-        .get(`/articles/I0Bi8t/comments`)
+        .get(`/articles/5/comments`)
         .expect((res) => expect(res.body.length).toBe(1));
     });
   });
 
   describe(`API refuses to create a comment to a non-existent post`, () => {
     test(`Status code 404`, async () => {
-      const app = createAPI();
+      const app = await createAPI();
 
       await request(app)
-        .post(`/articles/NOEXST/comments`)
+        .post(`/articles/20/comments`)
         .send({
           test: `Неважно`
         })
@@ -438,17 +443,17 @@ describe(`Post`, () => {
     let response;
 
     beforeAll(async () => {
-      app = createAPI();
+      app = await createAPI();
 
       response = await request(app)
-        .post(`/articles/I0Bi8t/comments`)
+        .post(`/articles/5/comments`)
         .send(invalidComment);
     });
 
     test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
     test(`Comments count isn't changed`, async () => {
       await request(app)
-        .get(`/articles/I0Bi8t/comments`)
+        .get(`/articles/5/comments`)
         .expect((res) => expect(res.body.length).toBe(0));
     });
   });

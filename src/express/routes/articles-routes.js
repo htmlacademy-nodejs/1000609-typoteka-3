@@ -25,8 +25,8 @@ articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
   const {body} = req;
   const postData = {
     title: body.title,
-    createdDate: `${body.date} 00:00:00`,
-    announce: body.announcement,
+    createdAt: `${body.date} 00:00:00`,
+    announcement: body.announcement,
     fullText: body[`full-text`],
     categories: body.category,
   };

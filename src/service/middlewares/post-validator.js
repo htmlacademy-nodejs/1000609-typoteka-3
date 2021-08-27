@@ -4,10 +4,10 @@ const {HttpCode} = require(`../../constants`);
 
 const postKeys = [
   {name: `title`, required: true, min: 30, max: 250},
-  {name: `createdDate`, required: true},
-  {name: `announce`, required: true, min: 30, max: 250},
+  {name: `createdAt`, required: true},
+  {name: `announcement`, required: true, min: 30, max: 250},
   {name: `fullText`, required: false, max: 1000},
-  {name: `category`, required: true}
+  {name: `categories`, required: true}
 ];
 
 module.exports = (req, res, next) => {
@@ -18,7 +18,7 @@ module.exports = (req, res, next) => {
       !keys.includes(key.name)
       || key.required && !newPost[key.name]
       || key.min && newPost[key.name].length < key.min
-      || key.max && newPost[key.name].length > key.max
+      || key.max && newPost[key.name] && newPost[key.name].length > key.max
     ) {
       return false;
     }
