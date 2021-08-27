@@ -25,7 +25,7 @@ const generateMockData = (count, titles, sentences, categories, comments) => (
   Array.from({length: count}, (_, index) => ({
     title: titles[getRandomInt(0, titles.length - 1)],
     picture: Math.random() > 0.1 ? getPictureFileName(index) : null,
-    createdDate: getRandomDate(),
+    createdAt: getRandomDate(),
     announcement: shuffleAndSlice(sentences, 4).join(` `),
     fullText: Math.random() > 0.1 ? shuffleAndSlice(sentences).join(` `) : null,
     categories: shuffleAndSlice(categories),
