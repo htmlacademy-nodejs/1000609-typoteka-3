@@ -11,7 +11,7 @@ myRouter.get(`/`, async (req, res) => {
   res.render(`user/my`, {posts, formatDate, formatDatetime});
 });
 myRouter.get(`/comments`, async (req, res) => {
-  const posts = await api.getPosts();
+  const posts = await api.getPosts({comments: true});
   res.render(`user/comments`, {posts: posts.slice(0, 3), formatDate, formatDatetime});
 });
 

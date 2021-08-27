@@ -7,7 +7,7 @@ const {formatDate, formatDatetime} = require(`../../utils`);
 const mainRouter = new Router();
 
 mainRouter.get(`/`, async (req, res) => {
-  const posts = await api.getPosts();
+  const posts = await api.getPosts({categories: true, comments: true});
   res.render(`main`, {posts, formatDate, formatDatetime});
 });
 mainRouter.get(`/register`, (req, res) => res.render(`sign-up`));

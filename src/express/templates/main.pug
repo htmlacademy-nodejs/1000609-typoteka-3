@@ -119,12 +119,12 @@ block content
           each post in posts
             li.preview__item
               ul.preview__breadcrumbs
-                each category in post.category
+                each category in post.categories
                   li.preview__breadcrumbs-item
-                    a.preview__breadcrumbs-link(href="#") #{category}
+                    a.preview__breadcrumbs-link(href="#") #{category.name}
               //.preview__background
               //  img.preview__background-image(src="/img/skyscraper@1x.jpg" width="460" height="240" srcset="/img/skyscraper@1x.jpg 1x, /img/skyscraper@2x.jpg 2x" alt="Фотография небоскреба")
-              +publicationDate(formatDatetime(post.createdDate), formatDate(post.createdDate))(class="preview__time")
+              +publicationDate(formatDatetime(post.createdAt), formatDate(post.createdAt))(class="preview__time")
               h3.preview__name
                 a.preview__name-link(href="#") #{post.title}
               p.preview__text #{post.announce}

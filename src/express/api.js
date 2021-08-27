@@ -20,8 +20,8 @@ class API {
     return response.data;
   }
 
-  getPosts() {
-    return this._load(`/articles`);
+  getPosts({categories, comments} = {}) {
+    return this._load(`/articles`, {params: {categories, comments}});
   }
 
   getPost(id) {

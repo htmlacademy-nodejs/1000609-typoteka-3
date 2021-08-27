@@ -33,6 +33,6 @@ block content
             if search && results.length
               each result in results
                 .search__result
-                  +publicationDate(formatDatetime(result.createdDate), formatDate(result.createdDate))(class="search__date")
+                  +publicationDate(formatDatetime(result.createdAt), formatDate(result.createdAt))(class="search__date")
                   a.search__link !{result.title.replace(RegExp(search, "gi"), (substr) => `<b>${substr}</b>`)}
     include partials/footer.pug

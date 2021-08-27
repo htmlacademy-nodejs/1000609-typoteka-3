@@ -53,8 +53,8 @@ block content
                   .new-publication__category-wrapper
                     each category, index in categories
                       .new-publication__checkbox.new-publication__checkbox--auto
-                        input(id=`category-${index}` type="checkbox" name="category[]" checked=(post && post.category ? post.category.includes(category) : false) value=category)
-                        label(for=`category-${index}`) #{category}
+                        input(id=`category-${index}` type="checkbox" name="category[]" checked=(post && post.category ? post.category.includes(category.id) : false) value=category.id)
+                        label(for=`category-${index}`) #{category.name}
                     a.new-publication__form-link.button.button--transparent(href="#") Добавить категорию
                   if (post && !post.category)
                     p.form__error-message Категория - для выбора обязательна хотя бы одна категория.

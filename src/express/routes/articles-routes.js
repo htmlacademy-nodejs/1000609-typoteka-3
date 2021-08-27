@@ -28,7 +28,7 @@ articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
     createdDate: `${body.date} 00:00:00`,
     announce: body.announcement,
     fullText: body[`full-text`],
-    category: body.category,
+    categories: body.category,
   };
 
   try {
