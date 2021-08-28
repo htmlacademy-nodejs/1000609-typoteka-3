@@ -28,7 +28,7 @@ const getRandomDate = () => {
   const limit = new Date().setMonth(new Date().getMonth() - 3);
   const date = new Date(getRandomInt(limit, now)).toISOString();
 
-  return date.replace(`T`, ` `).slice(0, -5);
+  return date;
 };
 
 /**

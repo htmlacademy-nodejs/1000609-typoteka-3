@@ -3,7 +3,7 @@
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
 const {FILE_TITLES_PATH, FILE_SENTENCES_PATH, FILE_CATEGORIES_PATH, FILE_COMMENTS_PATH, ExitCode} = require(`../../constants`);
-const {getRandomInt, getPictureFileName, shuffleAndSlice, readContent} = require(`../../utils.js`);
+const {getRandomInt, getPictureFileName, shuffleAndSlice, readContent} = require(`../../utils`);
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `fill-db.sql`;

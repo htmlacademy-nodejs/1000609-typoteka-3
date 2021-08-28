@@ -4,7 +4,7 @@ const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
 const {nanoid} = require(`nanoid`);
 const {FILE_TITLES_PATH, FILE_SENTENCES_PATH, FILE_CATEGORIES_PATH, FILE_COMMENTS_PATH, ExitCode, MAX_ID_LENGTH} = require(`../../constants`);
-const {getRandomInt, getRandomDate, shuffleAndSlice, readContent} = require(`../../utils.js`);
+const {getRandomInt, getRandomDate, getPictureFileName, shuffleAndSlice, readContent} = require(`../../utils`);
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `mocks.json`;
@@ -22,13 +22,14 @@ const generateComments = (count, comments) => (
 );
 
 const generateMockData = (count, titles, sentences, categories, comments) => (
-  Array.from({length: count}, () => ({
+  Array.from({length: count}, (_, index) => ({
     id: nanoid(MAX_ID_LENGTH),
     title: titles[getRandomInt(0, titles.length - 1)],
-    createdDate: getRandomDate(),
-    announce: shuffleAndSlice(sentences, 4).join(` `),
+    createdAt: getRandomDate(),
+    picture: getPictureFileName(index),
+    announcement: shuffleAndSlice(sentences, 4).join(` `),
     fullText: shuffleAndSlice(sentences).join(` `),
-    category: shuffleAndSlice(categories),
+    categories: shuffleAndSlice(categories),
     comments: generateComments(getRandomInt(CommentsRestrict.MIN, CommentsRestrict.MAX), comments)
   }))
 );

@@ -1,7 +1,7 @@
 'use strict';
 
 const {FILE_TITLES_PATH, FILE_SENTENCES_PATH, FILE_CATEGORIES_PATH, FILE_COMMENTS_PATH, ExitCode} = require(`../../constants`);
-const {getRandomInt, getRandomDate, getPictureFileName, shuffleAndSlice, readContent} = require(`../../utils.js`);
+const {getRandomInt, getRandomDate, getPictureFileName, shuffleAndSlice, readContent} = require(`../../utils`);
 const {getLogger} = require(`../lib/logger`);
 const getSequelize = require(`../lib/sequelize`);
 const initDatabase = require(`../lib/init-db`);
