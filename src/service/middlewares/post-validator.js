@@ -5,6 +5,7 @@ const {HttpCode} = require(`../../constants`);
 const postKeys = [
   {name: `title`, required: true, min: 30, max: 250},
   {name: `createdAt`, required: true},
+  {name: `picture`, required: false},
   {name: `announcement`, required: true, min: 30, max: 250},
   {name: `fullText`, required: false, max: 1000},
   {name: `categories`, required: true}

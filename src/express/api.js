@@ -36,7 +36,7 @@ class API {
   }
 
   getCategories(count) {
-    return this._load(`/categories`, {params: count});
+    return this._load(`/categories`, {params: {count}});
   }
 
   search(query) {

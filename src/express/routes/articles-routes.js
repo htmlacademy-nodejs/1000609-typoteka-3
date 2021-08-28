@@ -22,12 +22,14 @@ articlesRouter.get(`/add`, async (req, res) => {
   res.render(`articles/new-post`, {categories, post});
 });
 articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
-  const {body} = req;
+  const {body, file} = req;
+
   const postData = {
     title: body.title,
-    createdAt: `${body.date} 00:00:00`,
+    createdAt: `${body.date}T00:00:00.000Z`,
+    picture: file && file.filename ? file.filename : null,
     announcement: body.announcement,
-    fullText: body[`full-text`],
+    fullText: body[`full-text`] ? body[`full-text`] : null,
     categories: body.category,
   };
 

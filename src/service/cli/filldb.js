@@ -13,7 +13,7 @@ const CommentsRestrict = {
   MAX: 4
 };
 
-const logger = getLogger({});
+const logger = getLogger();
 
 const generateComments = (count, comments) => (
   Array.from({length: count}, () => ({
