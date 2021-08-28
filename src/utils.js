@@ -82,26 +82,26 @@ const readContent = async (filePath, logger) => {
 
 /**
  * Форматирует строковое представление даты
- * из вида yyyy-mm-dd HH:MM:ss в dd.mm.yyyy HH:MM
+ * из вида yyyy-mm-ddTHH:MM:ss.sssZ в dd.mm.yyyy HH:MM
  *
  * @param {String} fullDate
  * @return {String}
  */
 const formatDate = (fullDate) => {
-  const [date, time] = fullDate.split(` `);
+  const [date, time] = fullDate.split(`T`);
   const [year, month, day] = date.split(`-`);
-  return `${day}.${month}.${year}, ${time.slice(0, -3)}`;
+  return `${day}.${month}.${year}, ${time.slice(0, -8)}`;
 };
 
 /**
  * Форматирует строковое представление даты
- * из вида yyyy-mm-dd HH:MM:ss в yyyy-mm-ddTHH:MM
+ * из вида yyyy-mm-ddTHH:MM:ss.sssZ в yyyy-mm-ddTHH:MM
  *
  * @param {String} fullDate
  * @return {String}
  */
 const formatDatetime = (fullDate) => {
-  return fullDate.slice(0, -3).replace(` `, `T`);
+  return fullDate.slice(0, -8);
 };
 
 module.exports = {
