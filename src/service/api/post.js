@@ -12,10 +12,17 @@ module.exports = (app, postService, commentService) => {
   app.use(`/articles`, route);
 
   route.get(`/`, async (req, res) => {
-    const {categories, comments} = req.query;
-    const posts = await postService.findAll(categories, comments);
+    const {categories, comments, limit, offset} = req.query;
+    let result;
+
+    if (limit || offset) {
+      result = await postService.findPage({limit, offset});
+    } else {
+      result = await postService.findAll(categories, comments);
+    }
+
     res.status(HttpCode.OK)
-      .json(posts);
+      .json(result);
   });
 
   route.get(`/:articleId`, async (req, res) => {

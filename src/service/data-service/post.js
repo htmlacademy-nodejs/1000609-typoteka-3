@@ -32,6 +32,20 @@ class PostService {
     return this._Post.findByPk(id, {include: [Alias.CATEGORIES, Alias.COMMENTS]});
   }
 
+  async findPage({limit, offset}) {
+    const {count, rows} = await this._Post.findAndCountAll({
+      limit,
+      offset,
+      include: [Alias.CATEGORIES, Alias.COMMENTS],
+      order: [
+        [`createdAt`, `DESC`]
+      ],
+      distinct: true
+    });
+
+    return {count, posts: rows};
+  }
+
   async update(id, post) {
     const [affectedRows] = await this._Post.update(post, {
       where: {id}
