@@ -8,6 +8,7 @@ const FILE_CATEGORIES_PATH = `./data/categories.txt`;
 const FILE_COMMENTS_PATH = `./data/comments.txt`;
 const USER_ARGV_INDEX = 2;
 const MAX_ID_LENGTH = 6;
+const POSTS_PER_PAGE = 8;
 
 const Env = {
   DEVELOPMENT: `development`,
@@ -36,6 +37,7 @@ module.exports = {
   FILE_COMMENTS_PATH,
   USER_ARGV_INDEX,
   MAX_ID_LENGTH,
+  POSTS_PER_PAGE,
   Env,
   ExitCode,
   HttpCode
