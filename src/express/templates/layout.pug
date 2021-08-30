@@ -10,6 +10,10 @@ html(lang="ru")
     link(rel="preload" href="/fonts/Inter-Medium.woff2" as="font" crossorigin="anonymous")
     link(rel="preload" href="/fonts/SFProDisplay-Regular.woff2" as="font" crossorigin="anonymous")
     link(rel="stylesheet" href="/css/style.min.css")
+    style.
+      .pagination__item--active a {
+        pointer-events: none;
+      }
   body
     mixin publicationDate(datetime, date)
       time(class!=attributes.class || "publication__item-time" datetime=datetime) #{date}
