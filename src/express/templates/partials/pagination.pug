@@ -22,9 +22,9 @@ mixin pagination(page, totalPages, width, prefix)
   .preview__toggle-wrapper
     ul.preview__pagination.pagination
       li
-        a(class={"button--disabled": page === 1}).pagination__button.button.button--backwards(href=`${prefix}page=${page - 1}` aria-label="Страница назад") Назад
+        a.pagination__button.button.button--backwards(class={"button--disabled": page === 1} href=`${prefix}page=${page - 1}` aria-label="Страница назад") Назад
       while (i++ < end)
-        li(class={"pagination__item--active": i === page}).pagination__item
+        li.pagination__item(class={"pagination__item--active": i === page})
           a(href=`${prefix}page=${i}`) #{i}
       li
-        a(class={"button--disabled": page === totalPages}).pagination__button.button.button--forward(href=`${prefix}page=${page + 1}` aria-label="Страница вперед") Вперед
+        a.pagination__button.button.button--forward(class={"button--disabled": page === totalPages} href=`${prefix}page=${page + 1}` aria-label="Страница вперед") Вперед
