@@ -1,34 +1,47 @@
 'use strict';
 
+const Joi = require(`joi`);
 const {HttpCode} = require(`../../constants`);
 
-const postKeys = [
-  {name: `title`, required: true, min: 30, max: 250},
-  {name: `createdAt`, required: true},
-  {name: `picture`, required: false},
-  {name: `announcement`, required: true, min: 30, max: 250},
-  {name: `fullText`, required: false, max: 1000},
-  {name: `categories`, required: true}
-];
+const ErrorPostMessage = {
+  TITLE: `Заголовок - обязательное поле. Минимум 30 символов. Максимум 250.`,
+  CREATED_AT: `Дата публикации - обязательное поле.`,
+  PICTURE: `Фотография - доступны форматы jpg и png.`,
+  ANNOUNCEMENT: `Анонс публикации - обязательное поле. Минимум 30 символов. Максимум 250.`,
+  FULL_TEXT: `Полный текст публикации - максимум 1000 символов.`,
+  CATEGORIES: `Категория - для выбора обязательна хотя бы одна категория.`,
+};
+
+const schema = Joi.object({
+  title: Joi.string().min(30).max(250).required().messages({
+    'any.invalid': ErrorPostMessage.TITLE
+  }),
+  createdAt: Joi.string().isoDate().required().messages({
+    'any.invalid': ErrorPostMessage.CREATED_AT
+  }),
+  picture: Joi.string().pattern(/\.(?:jpg|png)$/i).messages({
+    'any.invalid': ErrorPostMessage.PICTURE
+  }),
+  announcement: Joi.string().min(30).max(250).required().messages({
+    'any.invalid': ErrorPostMessage.ANNOUNCEMENT
+  }),
+  fullText: Joi.string().max(1000).messages({
+    'any.invalid': ErrorPostMessage.FULL_TEXT
+  }),
+  categories: Joi.array().min(1).items(
+      Joi.number().integer().positive()
+  ).required().messages({
+    'any.invalid': ErrorPostMessage.CATEGORIES
+  })
+});
 
 module.exports = (req, res, next) => {
   const newPost = req.body;
-  const keys = Object.keys(newPost);
-  const keysValid = postKeys.every((key) => {
-    if (
-      !keys.includes(key.name)
-      || key.required && !newPost[key.name]
-      || key.min && newPost[key.name].length < key.min
-      || key.max && newPost[key.name] && newPost[key.name].length > key.max
-    ) {
-      return false;
-    }
-    return true;
-  });
+  const {error} = schema.validate(newPost, {abortEarly: false});
 
-  if (!keysValid) {
+  if (error) {
     return res.status(HttpCode.BAD_REQUEST)
-      .send(`Bad request`);
+      .send(error.details.map((err) => err.message));
   }
 
   return next();
