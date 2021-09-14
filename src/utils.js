@@ -104,6 +104,19 @@ const formatDatetime = (fullDate) => {
   return fullDate.slice(0, -8);
 };
 
+/**
+ * Функция преобразует ошибку в объект, состоящий из названий полей и сообщений
+ *
+ * @param {Error} error
+ * @return {Object}
+ */
+const prepareErrors = (error) => {
+  return error.response.data.reduce((result, err) => {
+    result[err.field] = err.message;
+    return result;
+  }, {});
+};
+
 module.exports = {
   getRandomInt,
   getRandomDate,
@@ -111,5 +124,6 @@ module.exports = {
   shuffleAndSlice,
   readContent,
   formatDate,
-  formatDatetime
+  formatDatetime,
+  prepareErrors
 };

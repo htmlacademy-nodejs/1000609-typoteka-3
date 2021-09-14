@@ -5,7 +5,7 @@ const session = require(`express-session`);
 const {nanoid} = require(`nanoid`);
 const upload = require(`../middlewares/upload`);
 const api = require(`../api`).getAPI();
-const {formatDate, formatDatetime} = require(`../../utils`);
+const {formatDate, formatDatetime, prepareErrors} = require(`../../utils`);
 
 const articlesRouter = new Router();
 
@@ -16,10 +16,11 @@ articlesRouter.use(session({
 }));
 
 articlesRouter.get(`/add`, async (req, res) => {
-  const {post} = req.session;
+  const {post, validationMessages} = req.session;
   delete req.session.post;
+  delete req.session.validationMessages;
   const categories = await api.getCategories();
-  res.render(`articles/new-post`, {categories, post});
+  res.render(`articles/new-post`, {categories, post, validationMessages});
 });
 articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
   const {body, file} = req;
@@ -36,8 +37,9 @@ articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
   try {
     await api.createPost(postData);
     res.redirect(`/my`);
-  } catch (e) {
+  } catch (err) {
     req.session.post = body;
+    req.session.validationMessages = prepareErrors(err);
     res.redirect(`back`);
   }
 });

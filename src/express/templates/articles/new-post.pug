@@ -31,56 +31,50 @@ block content
                   .new-publication__date-form-division
                     .new-publication__date-block
                       label(for="new-publication-date" aria-label="Календарь")
-                      input#new-publication-date(type="text" name="date" placeholder=`${new Date().toLocaleDateString("ru-RU")}` value=(post ? post.date : new Date().toISOString().slice(0, 10)))
+                      input#new-publication-date(type="text" name="date" placeholder=`${new Date().toLocaleDateString("ru-RU")}` value=(post && post.date ? post.date : new Date().toISOString().slice(0, 10)))
                 button.new-publication__button.button.button--colored(type="submit") Опубликовать
               a.popup__button.button.button--popup-close(aria-label="Закрыть окно") Закрыть окно
-              if (post && !post.date)
-                p.form__error-message.error__title Дата публикации - обязательное поле.
+              if (validationMessages && 'createdAt' in validationMessages)
+                p.form__error-message.error__title #{validationMessages.createdAt}
               .new-publication__form.form
                 .form__wrapper.form__wrapper--intro
                   .form__field
                     label
-                      input(type="text" name="title" placeholder="Заголовок" minlength="30" maxlength="250" required="" value=(post ? post.title : null))
-                    if (post && (!post.title || post.title < 30 || post.title > 250))
-                      p.form__error-message Заголовок - обязательное поле. Минимум 30 символов. Максимум 250.
+                      input(type="text" name="title" placeholder="Заголовок" minlength="30" maxlength="250" required="" value=(post && post.title ? post.title : null))
+                    if (validationMessages && 'title' in validationMessages)
+                      p.form__error-message #{validationMessages.title}
                   .form__field.form__field--post-image
                     label
-                      input#image-name-field(type="text" name="photo" placeholder="Фотография" readonly="")
+                      input#image-name-field(type="text" name="photo" placeholder="Фотография" value=(post && post.photo ? post.photo : null) readonly="")
                     .form__image-loader.form__image-loader--publication
                       label
                         input.visually-hidden(type="file" name="upload")
                         | Обзор
+                  if (validationMessages && 'picture' in validationMessages)
+                    p.form__error-message #{validationMessages.picture}
                   .new-publication__category-wrapper
                     each category, index in categories
                       .new-publication__checkbox.new-publication__checkbox--auto
                         input(id=`category-${index}` type="checkbox" name="category[]" checked=(post && post.category ? post.category.includes(category.id.toString()) : false) value=category.id)
                         label(for=`category-${index}`) #{category.name}
                     a.new-publication__form-link.button.button--transparent(href="#") Добавить категорию
-                  if (post && !post.category)
-                    p.form__error-message Категория - для выбора обязательна хотя бы одна категория.
+                  if (validationMessages && 'categories' in validationMessages)
+                    p.form__error-message #{validationMessages.categories}
                 .form__wrapper.form__wrapper--text
                   .form__field.form__field--publication-text
                     label
-                      textarea(rows="5" name="announcement" placeholder="Анонс публикации") #{post ? post.announcement : ""}
-                    if (post && (!post.announcement || post.announcement.length < 30 || post.announcement.length > 250))
-                      p.form__error-message Анонс публикации - обязательное поле. Минимум 30 символов. Максимум 250.
+                      textarea(rows="5" name="announcement" placeholder="Анонс публикации") #{post && post.announcement ? post.announcement : undefined}
+                    if (validationMessages && 'announcement' in validationMessages)
+                      p.form__error-message #{validationMessages.announcement}
                   .form__field.form__field--publication-text
                     label
-                      textarea(rows="10" name="full-text" placeholder="Полный текст публикации" maxlength="1000") #{post ? post["full-text"] : ""}
-                    if (post && post["full-text"] && post["full-text"].length > 1000)
-                      p.form__error-message Полный текст публикации - максимум 1000 символов.
-              if post
+                      textarea(rows="10" name="full-text" placeholder="Полный текст публикации" maxlength="1000") #{post && post["full-text"] ? post["full-text"] : undefined}
+                    if (validationMessages && 'fullText' in validationMessages)
+                      p.form__error-message #{validationMessages.fullText}
+              if validationMessages
                 .form__validation-error
                   p.form__error-message При добавлении публикации произошли ошибки:
                   ul.form__errors
-                    if (!post.title || post.title < 30 || post.title > 250)
-                      li.form__error Заголовок - обязательное поле. Минимум 30 символов. Максимум 250.
-                    if (!post.date)
-                      li.form__error Дата публикации - обязательное поле.
-                    if (!post.category)
-                      li.form__error Категория - для выбора обязательна хотя бы одна категория.
-                    if (!post.announcement || post.announcement.length < 30 || post.announcement.length > 250)
-                      li.form__error Анонс публикации - обязательное поле. Минимум 30 символов. Максимум 250.
-                    if (post["full-text"] && post["full-text"].length > 1000)
-                      li.form__error Полный текст публикации - максимум 1000 символов.
+                    each error in Object.values(validationMessages)
+                      li.form__error #{error}
     include ../partials/footer.pug
