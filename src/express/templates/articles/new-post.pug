@@ -23,7 +23,7 @@ block content
       section
         .popup.popup--new-publication.popup--anti
           .new-publication
-            form(action="/articles/add" method="POST" enctype="multipart/form-data")
+            form(action=`/articles/${id ? `edit/${id}` : 'add'}` method="POST" enctype="multipart/form-data")
               .new-publication__header
                 h1 Новая публикация
                 .new-publication__date-form
@@ -31,7 +31,7 @@ block content
                   .new-publication__date-form-division
                     .new-publication__date-block
                       label(for="new-publication-date" aria-label="Календарь")
-                      input#new-publication-date(type="text" name="date" placeholder=`${new Date().toLocaleDateString("ru-RU")}` value=(post && post.date ? post.date : new Date().toISOString().slice(0, 10)))
+                      input#new-publication-date(type="text" name="date" placeholder=`${new Date().toLocaleDateString("ru-RU")}` value=(post && post.createdAt ? post.createdAt.slice(0, 10) : new Date().toISOString().slice(0, 10)))
                 button.new-publication__button.button.button--colored(type="submit") Опубликовать
               a.popup__button.button.button--popup-close(aria-label="Закрыть окно") Закрыть окно
               if (validationMessages && 'createdAt' in validationMessages)
@@ -45,7 +45,7 @@ block content
                       p.form__error-message #{validationMessages.title}
                   .form__field.form__field--post-image
                     label
-                      input#image-name-field(type="text" name="photo" placeholder="Фотография" value=(post && post.photo ? post.photo : null) readonly="")
+                      input#image-name-field(type="text" name="photo" placeholder="Фотография" value=(post && post.picture ? post.picture : null) readonly="")
                     .form__image-loader.form__image-loader--publication
                       label
                         input.visually-hidden(type="file" name="upload")
@@ -55,7 +55,7 @@ block content
                   .new-publication__category-wrapper
                     each category, index in categories
                       .new-publication__checkbox.new-publication__checkbox--auto
-                        input(id=`category-${index}` type="checkbox" name="category[]" checked=(post && post.category ? post.category.includes(category.id.toString()) : false) value=category.id)
+                        input(id=`category-${index}` type="checkbox" name="category[]" checked=(post && post.categories ? post.categories.includes(category.id.toString()) : false) value=category.id)
                         label(for=`category-${index}`) #{category.name}
                     a.new-publication__form-link.button.button--transparent(href="#") Добавить категорию
                   if (validationMessages && 'categories' in validationMessages)
@@ -68,7 +68,7 @@ block content
                       p.form__error-message #{validationMessages.announcement}
                   .form__field.form__field--publication-text
                     label
-                      textarea(rows="10" name="full-text" placeholder="Полный текст публикации" maxlength="1000") #{post && post["full-text"] ? post["full-text"] : undefined}
+                      textarea(rows="10" name="full-text" placeholder="Полный текст публикации" maxlength="1000") #{post && post.fullText ? post.fullText : undefined}
                     if (validationMessages && 'fullText' in validationMessages)
                       p.form__error-message #{validationMessages.fullText}
               if validationMessages
