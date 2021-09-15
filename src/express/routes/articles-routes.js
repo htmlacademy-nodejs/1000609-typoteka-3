@@ -57,8 +57,26 @@ articlesRouter.get(`/category/:id`, (req, res) => res.render(`articles/articles-
 
 articlesRouter.get(`/:id`, async (req, res) => {
   const {id} = req.params;
+  const {comment, validationMessages} = req.session;
+  delete req.session.comment;
+  delete req.session.validationMessages;
   const [post, categories] = await getPostWithCategories(id, true);
-  res.render(`articles/post`, {post, categories, formatDate, formatDatetime});
+
+  res.render(`articles/post`, {id, post, categories, comment, validationMessages, formatDate, formatDatetime});
+});
+
+articlesRouter.post(`/:id/comments`, async (req, res) => {
+  const {id} = req.params;
+  const {message} = req.body;
+
+  try {
+    await api.createComment(id, {text: message});
+    res.redirect(`/articles/${id}`);
+  } catch (err) {
+    req.session.comment = message;
+    req.session.validationMessages = prepareErrors(err);
+    res.redirect(`back`);
+  }
 });
 
 articlesRouter.get(`/edit/:id`, async (req, res) => {
