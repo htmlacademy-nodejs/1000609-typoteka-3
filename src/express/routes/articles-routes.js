@@ -104,7 +104,7 @@ articlesRouter.post(`/edit/:id`, upload.single(`upload`), async (req, res) => {
   const postData = {
     title: body.title,
     createdAt: `${body.date}T00:00:00.000Z`,
-    picture: file && file.filename ? file.filename : body.photo,
+    picture: file && file.filename ? file.filename : (body.photo || null),
     announcement: body.announcement,
     fullText: body[`full-text`] ? body[`full-text`] : null,
     categories: body.category,

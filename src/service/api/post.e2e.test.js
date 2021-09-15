@@ -198,10 +198,10 @@ describe(`Post`, () => {
 
   describe(`API refuses to create a post if data is invalid`, () => {
     const newPost = {
-      title: `Заголовок публикации`,
+      title: `Заголовок публикации, состоящий из 46 символов`,
       createdAt: `2021-01-12 00:00:00`,
       picture: `picture.jpg`,
-      announcement: `Анонс публикации`,
+      announcement: `Анонс публикации, состоящий из 42 символов`,
       fullText: `Полный текст публикации`,
       categories: [1, 2]
     };
@@ -216,6 +216,36 @@ describe(`Post`, () => {
       for (const key of Object.keys(newPost)) {
         const badPost = {...newPost};
         delete badPost[key];
+        await request(app)
+          .post(`/articles`)
+          .send(badPost)
+          .expect(HttpCode.BAD_REQUEST);
+      }
+    });
+
+    test(`When field type is wrong response code is 400`, async () => {
+      const badPosts = [
+        {...newPost, createdAt: true},
+        {...newPost, picture: 12345},
+        {...newPost, categories: `Деревья`}
+      ];
+
+      for (const badPost of badPosts) {
+        await request(app)
+          .post(`/articles`)
+          .send(badPost)
+          .expect(HttpCode.BAD_REQUEST);
+      }
+    });
+
+    test(`When field value is wrong response code is 400`, async () => {
+      const badPosts = [
+        {...newPost, createdAt: `unvalid date`},
+        {...newPost, title: `too short`},
+        {...newPost, categories: []}
+      ];
+
+      for (const badPost of badPosts) {
         await request(app)
           .post(`/articles`)
           .send(badPost)
@@ -291,11 +321,11 @@ describe(`Post`, () => {
 
   describe(`API refuses to change an existent post if data is invalid`, () => {
     const invalidPost = {
-      title: `Заголовок публикации`,
+      title: `Заголовок публикации, состоящий из 46 символов`,
       createdAt: `2021-04-07 00:00:00`,
       picture: null,
-      announcement: `В которой есть ошибка`,
-      fullText: `Отсутствует поле categories`
+      announcement: `В которой есть ошибка - отсутствует поле categories`,
+      fullText: null
     };
 
     test(`Status code 400`, async () => {

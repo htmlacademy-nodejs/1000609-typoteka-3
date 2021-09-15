@@ -25,7 +25,7 @@ const schema = Joi.object({
   createdAt: Joi.string().isoDate().required().messages({
     'any.required': ErrorPostMessage.CREATED_AT
   }),
-  picture: Joi.string().pattern(/\.(?:jpg|png)$/i).allow(null).messages({
+  picture: Joi.string().pattern(/\.(?:jpg|png)$/i).allow(null).required().messages({
     'string.pattern.base': ErrorPostMessage.PICTURE,
   }),
   announcement: Joi.string().min(30).max(250).required().messages({
@@ -33,7 +33,7 @@ const schema = Joi.object({
     'string.min': ErrorPostMessage.ANNOUNCEMENT_MIN,
     'string.max': ErrorPostMessage.ANNOUNCEMENT_MAX,
   }),
-  fullText: Joi.string().max(1000).allow(null).messages({
+  fullText: Joi.string().max(1000).allow(null).required().messages({
     'string.max': ErrorPostMessage.FULL_TEXT,
   }),
   categories: Joi.array().min(1).items(
