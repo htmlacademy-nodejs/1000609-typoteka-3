@@ -468,23 +468,25 @@ describe(`Post`, () => {
   });
 
   describe(`API refuses to create a comment if data is invalid`, () => {
-    const invalidComment = {};
+    const invalidComments = [{}, {text: `too short`}];
     let app;
     let response;
 
-    beforeAll(async () => {
-      app = await createAPI();
+    for (const comment of invalidComments) {
+      beforeAll(async () => {
+        app = await createAPI();
 
-      response = await request(app)
-        .post(`/articles/5/comments`)
-        .send(invalidComment);
-    });
+        response = await request(app)
+          .post(`/articles/5/comments`)
+          .send(comment);
+      });
 
-    test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
-    test(`Comments count isn't changed`, async () => {
-      await request(app)
-        .get(`/articles/5/comments`)
-        .expect((res) => expect(res.body.length).toBe(0));
-    });
+      test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+      test(`Comments count isn't changed`, async () => {
+        await request(app)
+          .get(`/articles/5/comments`)
+          .expect((res) => expect(res.body.length).toBe(0));
+      });
+    }
   });
 });
