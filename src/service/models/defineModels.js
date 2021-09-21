@@ -5,6 +5,7 @@ const Alias = require(`./alias`);
 const defineCategory = require(`./category`);
 const defineComment = require(`./comment`);
 const definePost = require(`./post`);
+const defineUser = require(`./user`);
 
 class PostCategory extends Model {}
 
@@ -12,6 +13,7 @@ const defineModels = (sequelize) => {
   const Category = defineCategory(sequelize);
   const Comment = defineComment(sequelize);
   const Post = definePost(sequelize);
+  const User = defineUser(sequelize);
 
   Post.hasMany(Comment, {as: Alias.COMMENTS, foreignKey: `postId`});
   Comment.belongsTo(Post, {foreignKey: `postId`});
@@ -23,7 +25,13 @@ const defineModels = (sequelize) => {
   Category.belongsToMany(Post, {through: PostCategory, as: Alias.POSTS});
   Category.hasMany(PostCategory, {as: Alias.POST_CATEGORIES});
 
-  return {Category, Comment, Post, PostCategory};
+  User.hasMany(Post, {as: Alias.POSTS, foreignKey: `userId`});
+  Post.belongsTo(User, {as: Alias.USERS, foreignKey: `userId`});
+
+  User.hasMany(Comment, {as: Alias.COMMENTS, foreignKey: `userId`});
+  Comment.belongsTo(User, {as: Alias.USERS, foreignKey: `userId`});
+
+  return {Category, Comment, Post, PostCategory, User};
 };
 
 module.exports = defineModels;

@@ -4,5 +4,6 @@ module.exports = {
   COMMENTS: `comments`,
   POSTS: `posts`,
   CATEGORIES: `categories`,
-  POST_CATEGORIES: `postCategories`
+  POST_CATEGORIES: `postCategories`,
+  USERS: `users`
 };
