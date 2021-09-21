@@ -14,6 +14,7 @@ const ErrorPostMessage = {
   ANNOUNCEMENT_MAX: `Анонс публикации - максимум 250 символов.`,
   FULL_TEXT: `Полный текст публикации - максимум 1000 символов.`,
   CATEGORIES: `Категория - для выбора обязательна хотя бы одна категория.`,
+  USER_ID: `Некорректный идентификатор пользователя.`
 };
 
 const schema = Joi.object({
@@ -40,6 +41,9 @@ const schema = Joi.object({
       Joi.number().integer().positive()
   ).required().messages(
       [`any.required`, `array.min`].reduce((result, rule) => ({...result, [rule]: ErrorPostMessage.CATEGORIES}), {})
+  ),
+  userId: Joi.number().integer().positive().required().messages(
+      [`any.required`, `number.base`, `number.positive`].reduce((result, rule) => ({...result, [rule]: ErrorPostMessage.USER_ID}), {})
   )
 });
 
