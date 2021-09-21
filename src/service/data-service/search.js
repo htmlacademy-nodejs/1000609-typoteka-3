@@ -15,7 +15,10 @@ class SearchService {
           [Op.substring]: searchText
         }
       },
-      include: [Alias.CATEGORIES]
+      include: [Alias.CATEGORIES],
+      order: [
+        [`createdAt`, `DESC`]
+      ]
     });
 
     return posts.map((post) => post.get());

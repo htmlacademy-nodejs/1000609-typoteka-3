@@ -5,6 +5,8 @@ const Alias = require(`../models/alias`);
 class PostService {
   constructor(sequelize) {
     this._Post = sequelize.models.Post;
+    this._Comment = sequelize.models.Comment;
+    this._User = sequelize.models.User;
   }
 
   async create(postData) {
@@ -21,22 +23,74 @@ class PostService {
     }
 
     if (needComments) {
-      include.push(Alias.COMMENTS);
+      include.push({
+        model: this._Comment,
+        as: Alias.COMMENTS,
+        include: [
+          {
+            model: this._User,
+            as: Alias.USERS,
+            attributes: {
+              exclude: [`passwordHash`]
+            }
+          }
+        ]
+      });
     }
 
-    const posts = await this._Post.findAll({include});
+    const posts = await this._Post.findAll({
+      include,
+      order: [
+        [`createdAt`, `DESC`]
+      ]
+    });
     return posts.map((post) => post.get());
   }
 
   findOne(id) {
-    return this._Post.findByPk(id, {include: [Alias.CATEGORIES, Alias.COMMENTS]});
+    return this._Post.findByPk(
+        id,
+        {
+          include: [
+            Alias.CATEGORIES,
+            {
+              model: this._Comment,
+              as: Alias.COMMENTS,
+              include: [
+                {
+                  model: this._User,
+                  as: Alias.USERS,
+                  attributes: {
+                    exclude: [`passwordHash`]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+    );
   }
 
   async findPage({limit, offset}) {
     const {count, rows} = await this._Post.findAndCountAll({
       limit,
       offset,
-      include: [Alias.CATEGORIES, Alias.COMMENTS],
+      include: [
+        Alias.CATEGORIES,
+        {
+          model: this._Comment,
+          as: Alias.COMMENTS,
+          include: [
+            {
+              model: this._User,
+              as: Alias.USERS,
+              attributes: {
+                exclude: [`passwordHash`]
+              }
+            }
+          ]
+        }
+      ],
       order: [
         [`createdAt`, `DESC`]
       ],
