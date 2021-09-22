@@ -3,8 +3,8 @@
 const defineModels = require(`../models/defineModels`);
 const Alias = require(`../models/alias`);
 
-module.exports = async (sequelize, {categories, posts}) => {
-  const {Category, Post} = defineModels(sequelize);
+module.exports = async (sequelize, {categories, posts, users}) => {
+  const {Category, Post, User} = defineModels(sequelize);
   await sequelize.sync({force: true});
 
   const categoryModels = await Category.bulkCreate(
@@ -15,6 +15,20 @@ module.exports = async (sequelize, {categories, posts}) => {
     [cur.name]: cur.id,
     ...acc
   }), {});
+
+  const userModels = await User.bulkCreate(users, {include: [Alias.POSTS, Alias.COMMENTS]});
+
+  const userIdByEmail = userModels.reduce((acc, next) => ({
+    [next.email]: next.id,
+    ...acc
+  }), {});
+
+  posts.forEach((post) => {
+    post.userId = userIdByEmail[post.user];
+    post.comments.forEach((comment) => {
+      comment.userId = userIdByEmail[comment.user];
+    });
+  });
 
   const postPromises = posts.map(async (post) => {
     const postModel = await Post.create(post, {include: [Alias.COMMENTS]});
