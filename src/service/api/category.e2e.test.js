@@ -6,6 +6,7 @@ const Sequelize = require(`sequelize`);
 
 const {HttpCode} = require(`../../constants`);
 const initDB = require(`../lib/init-db`);
+const passwordUtils = require(`../lib/password`);
 const category = require(`./category`);
 const DataService = require(`../data-service/category`);
 
@@ -21,8 +22,25 @@ const mockCategories = [
   `Железо`
 ];
 
+const mockUsers = [
+  {
+    email: `admin@typoteka.ru`,
+    name: `admin`,
+    surname: `admin`,
+    passwordHash: passwordUtils.hashSync(`admin`),
+    isAdmin: true
+  },
+  {
+    email: `yasenevskiy@ya.ru`,
+    name: `Александр`,
+    surname: `Ясеневский`,
+    passwordHash: passwordUtils.hashSync(`17111996`)
+  }
+];
+
 const mockPosts = [
   {
+    user: `admin@typoteka.ru`,
     title: `Борьба с прокрастинацией`,
     createdAt: `2021-04-17 06:12:08`,
     picture: `item01.jpg`,
@@ -31,14 +49,18 @@ const mockPosts = [
     categories: [`Музыка`, `Деревья`, `Кино`, `Железо`, `Разное`, `IT`, `За жизнь`, `Без рамки`, `Программирование`],
     comments: [
       {
+        user: `admin@typoteka.ru`,
         text: `Плюсую, но слишком много буквы! Согласен с автором!`
       }, {
+        user: `yasenevskiy@ya.ru`,
         text: `Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Хочу такую же футболку :-) Согласен с автором!`
       }, {
+        user: `admin@typoteka.ru`,
         text: `Планируете записать видосик на эту тему? Плюсую, но слишком много буквы! Совсем немного... Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Хочу такую же футболку :-) Согласен с автором! Это где ж такие красоты? Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Мне кажется или я уже читал это где-то?`
       }
     ]
   }, {
+    user: `admin@typoteka.ru`,
     title: `Как перестать беспокоиться и начать жить`,
     createdAt: `2021-04-18 22:02:25`,
     picture: null,
@@ -47,6 +69,7 @@ const mockPosts = [
     categories: [`IT`, `За жизнь`, `Железо`, `Деревья`, `Кино`],
     comments: []
   }, {
+    user: `yasenevskiy@ya.ru`,
     title: `Борьба с прокрастинацией`,
     createdAt: `2021-06-22 14:23:46`,
     picture: `item02.jpg`,
@@ -55,12 +78,15 @@ const mockPosts = [
     categories: [`За жизнь`],
     comments: [
       {
+        user: `admin@typoteka.ru`,
         text: `Согласен с автором! Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Плюсую, но слишком много буквы! Планируете записать видосик на эту тему?`
       }, {
+        user: `yasenevskiy@ya.ru`,
         text: `Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Мне кажется или я уже читал это где-то?`
       }
     ]
   }, {
+    user: `admin@typoteka.ru`,
     title: `Как собрать камни бесконечности`,
     createdAt: `2021-06-17 19:30:19`,
     picture: `item03.jpg`,
@@ -69,12 +95,15 @@ const mockPosts = [
     categories: [`Программирование`, `Без рамки`, `За жизнь`, `Железо`],
     comments: [
       {
+        user: `admin@typoteka.ru`,
         text: `Согласен с автором! Планируете записать видосик на эту тему?`
       }, {
+        user: `yasenevskiy@ya.ru`,
         text: `Плюсую, но слишком много буквы! Согласен с автором!`
       }
     ]
   }, {
+    user: `yasenevskiy@ya.ru`,
     title: `Обзор новейшего смартфона`,
     createdAt: `2021-06-26 00:48:11`,
     picture: `item04.jpg`,
@@ -83,8 +112,10 @@ const mockPosts = [
     categories: [`Кино`, `Музыка`],
     comments: [
       {
+        user: `yasenevskiy@ya.ru`,
         text: `Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Мне кажется или я уже читал это где-то? Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Это где ж такие красоты? Хочу такую же футболку :-) Согласен с автором! Плюсую, но слишком много буквы! Планируете записать видосик на эту тему?`
       }, {
+        user: `admin@typoteka.ru`,
         text: `Планируете записать видосик на эту тему? Плюсую, но слишком много буквы!`
       }
     ]
@@ -93,7 +124,7 @@ const mockPosts = [
 
 const createAPI = async (posts = mockPosts) => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
-  await initDB(mockDB, {categories: posts.length ? mockCategories : [], posts});
+  await initDB(mockDB, {categories: posts.length ? mockCategories : [], posts, users: mockUsers});
   const app = express();
   app.use(express.json());
   category(app, new DataService(mockDB));

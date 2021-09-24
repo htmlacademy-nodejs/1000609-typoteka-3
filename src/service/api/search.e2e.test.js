@@ -6,6 +6,7 @@ const Sequelize = require(`sequelize`);
 
 const {HttpCode} = require(`../../constants`);
 const initDB = require(`../lib/init-db`);
+const passwordUtils = require(`../lib/password`);
 const search = require(`./search`);
 const DataService = require(`../data-service/search`);
 
@@ -21,8 +22,25 @@ const mockCategories = [
   `Железо`
 ];
 
+const mockUsers = [
+  {
+    email: `admin@typoteka.ru`,
+    name: `admin`,
+    surname: `admin`,
+    passwordHash: passwordUtils.hashSync(`admin`),
+    isAdmin: true
+  },
+  {
+    email: `yasenevskiy@ya.ru`,
+    name: `Александр`,
+    surname: `Ясеневский`,
+    passwordHash: passwordUtils.hashSync(`17111996`)
+  }
+];
+
 const mockPosts = [
   {
+    user: `admin@typoteka.ru`,
     title: `Что такое золотое сечение`,
     createdAt: `2021-06-16 10:41:40`,
     picture: `item01.jpg`,
@@ -31,14 +49,18 @@ const mockPosts = [
     categories: [`Музыка`, `Программирование`, `За жизнь`],
     comments: [
       {
+        user: `yasenevskiy@ya.ru`,
         text: `Согласен с автором! Это где ж такие красоты? Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Плюсую, но слишком много буквы!`
       }, {
+        user: `admin@typoteka.ru`,
         text: `Совсем немного... Плюсую, но слишком много буквы! Хочу такую же футболку :-) Планируете записать видосик на эту тему? Мне кажется или я уже читал это где-то? Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Это где ж такие красоты? Согласен с автором!`
       }, {
+        user: `yasenevskiy@ya.ru`,
         text: `Согласен с автором!`
       }
     ]
   }, {
+    user: `yasenevskiy@ya.ru`,
     title: `Что такое золотое сечение`,
     createdAt: `2021-04-19 04:31:15`,
     picture: `item02.jpg`,
@@ -47,6 +69,7 @@ const mockPosts = [
     categories: [`Разное`, `Без рамки`, `Кино`, `За жизнь`, `IT`, `Деревья`],
     comments: []
   }, {
+    user: `yasenevskiy@ya.ru`,
     title: `Самый лучший музыкальный альбом этого года`,
     createdAt: `2021-05-02 09:18:55`,
     picture: `item03.jpg`,
@@ -55,16 +78,21 @@ const mockPosts = [
     categories: [`Железо`, `IT`],
     comments: [
       {
+        user: `admin@typoteka.ru`,
         text: `Планируете записать видосик на эту тему? Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Хочу такую же футболку :-) Мне кажется или я уже читал это где-то? Это где ж такие красоты? Совсем немного... Плюсую, но слишком много буквы! Согласен с автором! Давно не пользуюсь стационарными компьютерами. Ноутбуки победили.`
       }, {
+        user: `admin@typoteka.ru`,
         text: `Согласен с автором! Это где ж такие красоты?`
       }, {
+        user: `admin@typoteka.ru`,
         text: `Совсем немного... Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Мне кажется или я уже читал это где-то? Планируете записать видосик на эту тему? Хочу такую же футболку :-) Согласен с автором! Это где ж такие красоты?`
       }, {
+        user: `admin@typoteka.ru`,
         text: `Плюсую, но слишком много буквы! Это где ж такие красоты? Планируете записать видосик на эту тему?`
       }
     ]
   }, {
+    user: `admin@typoteka.ru`,
     title: `Лучшие рок-музыканты 20-века`,
     createdAt: `2021-04-29 04:35:10`,
     picture: `item04.jpg`,
@@ -73,14 +101,18 @@ const mockPosts = [
     categories: [`Музыка`, `Железо`, `Программирование`, `Деревья`, `Без рамки`],
     comments: [
       {
+        user: `admin@typoteka.ru`,
         text: `Совсем немного... Мне кажется или я уже читал это где-то? Согласен с автором! Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Плюсую, но слишком много буквы! Хочу такую же футболку :-) Это где ж такие красоты? Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Планируете записать видосик на эту тему?`
       }, {
+        user: `yasenevskiy@ya.ru`,
         text: `Плюсую, но слишком много буквы! Это где ж такие красоты?`
       }, {
+        user: `yasenevskiy@ya.ru`,
         text: `Совсем немного... Мне кажется или я уже читал это где-то? Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Это где ж такие красоты? Согласен с автором! Плюсую, но слишком много буквы! Хочу такую же футболку :-) Планируете записать видосик на эту тему?`
       }
     ]
   }, {
+    user: `yasenevskiy@ya.ru`,
     title: `Учим HTML и CSS`,
     createdAt: `2021-05-04 06:27:03`,
     picture: null,
@@ -89,6 +121,7 @@ const mockPosts = [
     categories: [`Без рамки`, `Разное`, `Деревья`, `Железо`, `IT`, `Музыка`, `За жизнь`],
     comments: [
       {
+        user: `admin@typoteka.ru`,
         text: `Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Согласен с автором! Плюсую, но слишком много буквы!`
       }
     ]
@@ -97,7 +130,7 @@ const mockPosts = [
 
 const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
-  await initDB(mockDB, {categories: mockCategories, posts: mockPosts});
+  await initDB(mockDB, {categories: mockCategories, posts: mockPosts, users: mockUsers});
   const app = express();
   app.use(express.json());
   search(app, new DataService(mockDB));

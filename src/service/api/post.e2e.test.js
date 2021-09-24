@@ -6,6 +6,7 @@ const Sequelize = require(`sequelize`);
 
 const {HttpCode} = require(`../../constants`);
 const initDB = require(`../lib/init-db`);
+const passwordUtils = require(`../lib/password`);
 const post = require(`./post`);
 const DataService = require(`../data-service/post`);
 const CommentService = require(`../data-service/comment`);
@@ -22,8 +23,25 @@ const mockCategories = [
   `Железо`
 ];
 
+const mockUsers = [
+  {
+    email: `admin@typoteka.ru`,
+    name: `admin`,
+    surname: `admin`,
+    passwordHash: passwordUtils.hashSync(`admin`),
+    isAdmin: true
+  },
+  {
+    email: `yasenevskiy@ya.ru`,
+    name: `Александр`,
+    surname: `Ясеневский`,
+    passwordHash: passwordUtils.hashSync(`17111996`)
+  }
+];
+
 const mockPosts = [
   {
+    user: `admin@typoteka.ru`,
     title: `Как перестать беспокоиться и начать жить`,
     createdAt: `2021-04-28 01:21:31`,
     picture: `item01.jpg`,
@@ -32,14 +50,18 @@ const mockPosts = [
     categories: [`Железо`, `IT`, `Программирование`],
     comments: [
       {
+        user: `yasenevskiy@ya.ru`,
         text: `Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Планируете записать видосик на эту тему? Хочу такую же футболку :-) Давно не пользуюсь стационарными компьютерами. Ноутбуки победили.`
       }, {
+        user: `yasenevskiy@ya.ru`,
         text: `Хочу такую же футболку :-) Мне кажется или я уже читал это где-то? Планируете записать видосик на эту тему?`
       }, {
+        user: `admin@typoteka.ru`,
         text: `Согласен с автором!`
       }
     ]
   }, {
+    user: `admin@typoteka.ru`,
     title: `Учим HTML и CSS`,
     createdAt: `2021-04-11 17:21:13`,
     picture: `item01.jpg`,
@@ -48,6 +70,7 @@ const mockPosts = [
     categories: [`Деревья`, `Кино`, `За жизнь`, `Программирование`],
     comments: []
   }, {
+    user: `yasenevskiy@ya.ru`,
     title: `Рок — это протест`,
     createdAt: `2021-06-20 17:41:29`,
     picture: `item01.jpg`,
@@ -56,10 +79,12 @@ const mockPosts = [
     categories: [`Разное`, `Без рамки`],
     comments: [
       {
+        user: `admin@typoteka.ru`,
         text: `Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Это где ж такие красоты? Совсем немного... Хочу такую же футболку :-)`
       }
     ]
   }, {
+    user: `yasenevskiy@ya.ru`,
     title: `Как перестать беспокоиться и начать жить`,
     createdAt: `2021-04-04 02:48:49`,
     picture: null,
@@ -68,10 +93,12 @@ const mockPosts = [
     categories: [`Музыка`, `Кино`, `Разное`],
     comments: [
       {
+        user: `admin@typoteka.ru`,
         text: `Это где ж такие красоты? Согласен с автором! Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Мне кажется или я уже читал это где-то? Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Планируете записать видосик на эту тему? Хочу такую же футболку :-)`
       }
     ]
   }, {
+    user: `admin@typoteka.ru`,
     title: `Самый лучший музыкальный альбом этого года`,
     createdAt: `2021-05-27 15:45:12`,
     picture: null,
@@ -84,7 +111,7 @@ const mockPosts = [
 
 const createAPI = async (posts = mockPosts) => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
-  await initDB(mockDB, {categories: mockCategories, posts});
+  await initDB(mockDB, {categories: mockCategories, posts, users: mockUsers});
   const app = express();
   app.use(express.json());
   post(app, new DataService(mockDB), new CommentService(mockDB));
@@ -105,9 +132,6 @@ describe(`Post`, () => {
     test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
     test(`Content-Type application/json`, () => expect(response.type).toBe(`application/json`));
     test(`Returns a list of 5 posts`, () => expect(response.body.length).toBe(5));
-    test(`First post's title equals "Как перестать беспокоиться и начать жить"`, () => {
-      expect(response.body[0].title).toBe(`Как перестать беспокоиться и начать жить`);
-    });
   });
 
   describe(`API handles the situation when the are no posts`, () => {
@@ -173,7 +197,8 @@ describe(`Post`, () => {
       picture: `picture.jpg`,
       announcement: `Анонс публикации, состоящий из 42 символов`,
       fullText: `Полный текст публикации`,
-      categories: [1]
+      categories: [1],
+      userId: 1
     };
 
     let response;
@@ -203,7 +228,8 @@ describe(`Post`, () => {
       picture: `picture.jpg`,
       announcement: `Анонс публикации, состоящий из 42 символов`,
       fullText: `Полный текст публикации`,
-      categories: [1, 2]
+      categories: [1, 2],
+      userId: 1
     };
 
     let app;
@@ -273,7 +299,8 @@ describe(`Post`, () => {
       picture: `picture.jpg`,
       announcement: `Анонс публикации, состоящий из 42 символов`,
       fullText: null,
-      categories: [2]
+      categories: [2],
+      userId: 1
     };
 
     let app;
@@ -302,7 +329,8 @@ describe(`Post`, () => {
       picture: `picture.jpg`,
       announcement: `Анонс публикации, состоящий из 42 символов`,
       fullText: `Полный текст публикации`,
-      categories: [3]
+      categories: [3],
+      userId: 1
     };
 
     let app;
@@ -325,7 +353,8 @@ describe(`Post`, () => {
       createdAt: `2021-04-07 00:00:00`,
       picture: null,
       announcement: `В которой есть ошибка - отсутствует поле categories`,
-      fullText: null
+      fullText: null,
+      userId: 1
     };
 
     test(`Status code 400`, async () => {
@@ -431,7 +460,8 @@ describe(`Post`, () => {
 
   describe(`API creates a comment if data is valid`, () => {
     const newComment = {
-      text: `Валидному комментарию достаточно этого поля`
+      text: `Валидному комментарию достаточно этого поля`,
+      userId: 1
     };
 
     let app;
@@ -468,7 +498,7 @@ describe(`Post`, () => {
   });
 
   describe(`API refuses to create a comment if data is invalid`, () => {
-    const invalidComments = [{}, {text: `too short`}];
+    const invalidComments = [{}, {text: `too short`, userId: 1}, {text: `Не указан userId`}];
     let app;
     let response;
 
