@@ -20,16 +20,16 @@ const schema = Joi.object({
     'string.email': ErrorRegisterMessage.EMAIL_INVALID
   }),
   name: Joi.string().pattern(/[^0-9$&+,:;=?@#|'<>.^*()%!]+$/).required().messages({
-    ...([`any.required`, `string.pattern.base`].reduce((result, rule) => ({...result, [rule]: ErrorRegisterMessage.NAME}), {})),
+    ...([`any.required`, `string.empty`, `string.pattern.base`].reduce((result, rule) => ({...result, [rule]: ErrorRegisterMessage.NAME}), {})),
   }),
   surname: Joi.string().pattern(/[^0-9$&+,:;=?@#|'<>.^*()%!]+$/).required().messages({
-    ...([`any.required`, `string.pattern.base`].reduce((result, rule) => ({...result, [rule]: ErrorRegisterMessage.SURNAME}), {})),
+    ...([`any.required`, `string.empty`, `string.pattern.base`].reduce((result, rule) => ({...result, [rule]: ErrorRegisterMessage.SURNAME}), {})),
   }),
   password: Joi.string().min(6).required().messages({
     ...([`any.required`, `string.min`].reduce((result, rule) => ({...result, [rule]: ErrorRegisterMessage.PASSWORD}), {})),
   }),
   passwordRepeated: Joi.string().required().valid(Joi.ref(`password`)).required().messages({
-    ...([`any.required`, `any.only`].reduce((result, rule) => ({...result, [rule]: ErrorRegisterMessage.PASSWORD_REPEATED}), {})),
+    ...([`any.required`, `string.empty`, `any.only`].reduce((result, rule) => ({...result, [rule]: ErrorRegisterMessage.PASSWORD_REPEATED}), {})),
   }),
   avatar: Joi.string().pattern(/\.(?:jpg|png|jpeg)$/i).allow(null).required().messages({
     'string.pattern.base': ErrorRegisterMessage.AVATAR,
