@@ -11,7 +11,7 @@ const ErrorRegisterMessage = {
   SURNAME: `Фамилия - обязательное поле. Не должно содержать цифр и специальных символов.`,
   PASSWORD: `Пароль - обязательное поле. Минимум 6 символов.`,
   PASSWORD_REPEATED: `Пароли не совпадают.`,
-  AVATAR: `Фото профиля - доступны форматы jpg и png.`,
+  AVATAR: `Фото профиля - доступны форматы jpg, jpeg и png.`,
 };
 
 const schema = Joi.object({
@@ -31,7 +31,7 @@ const schema = Joi.object({
   passwordRepeated: Joi.string().required().valid(Joi.ref(`password`)).required().messages({
     ...([`any.required`, `any.only`].reduce((result, rule) => ({...result, [rule]: ErrorRegisterMessage.PASSWORD_REPEATED}), {})),
   }),
-  avatar: Joi.string().pattern(/\.(?:jpg|png)$/i).allow(null).required().messages({
+  avatar: Joi.string().pattern(/\.(?:jpg|png|jpeg)$/i).allow(null).required().messages({
     'string.pattern.base': ErrorRegisterMessage.AVATAR,
   }),
 });

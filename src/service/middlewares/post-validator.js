@@ -8,7 +8,7 @@ const ErrorPostMessage = {
   TITLE_MIN: `Заголовок - минимум 30 символов.`,
   TITLE_MAX: `Заголовок - максимум 250 символов.`,
   CREATED_AT: `Дата публикации - обязательное поле.`,
-  PICTURE: `Фотография - доступны форматы jpg и png.`,
+  PICTURE: `Фотография - доступны форматы jpg, jpeg и png.`,
   ANNOUNCEMENT: `Анонс публикации - обязательное поле.`,
   ANNOUNCEMENT_MIN: `Анонс публикации - минимум 30 символов.`,
   ANNOUNCEMENT_MAX: `Анонс публикации - максимум 250 символов.`,
@@ -26,7 +26,7 @@ const schema = Joi.object({
   createdAt: Joi.string().isoDate().required().messages({
     'any.required': ErrorPostMessage.CREATED_AT
   }),
-  picture: Joi.string().pattern(/\.(?:jpg|png)$/i).allow(null).required().messages({
+  picture: Joi.string().pattern(/\.(?:jpg|png|jpeg)$/i).allow(null).required().messages({
     'string.pattern.base': ErrorPostMessage.PICTURE,
   }),
   announcement: Joi.string().min(30).max(250).required().messages({
