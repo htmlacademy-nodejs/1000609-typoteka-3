@@ -12,7 +12,7 @@ class SearchService {
     const posts = await this._Post.findAll({
       where: {
         title: {
-          [Op.substring]: searchText
+          [Op.iLike]: `%${searchText}%`
         }
       },
       include: [Alias.CATEGORIES],
