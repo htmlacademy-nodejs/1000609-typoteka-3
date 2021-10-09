@@ -230,4 +230,55 @@ describe(`User`, () => {
         .expect(HttpCode.BAD_REQUEST);
     });
   });
+
+  describe(`API authenticate user if data is valid`, () => {
+    const validAuthData = {
+      email: `admin@typoteka.ru`,
+      password: `admin`
+    };
+
+    let response;
+
+    beforeAll(async () => {
+      const app = await createAPI();
+      response = await request(app)
+        .post(`/user/auth`)
+        .send(validAuthData);
+    });
+
+    test(`Status code is 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+    test(`User name is admin`, () => expect(response.body.name).toBe(`admin`));
+  });
+
+  describe(`API refuses to authenticate user if data is invalid`, () => {
+    let app;
+
+    beforeAll(async () => {
+      app = await createAPI();
+    });
+
+    test(`If email is incorrect status is 401`, async () => {
+      const badAuthData = {
+        email: `not-exist@example.com`,
+        password: `admin`
+      };
+
+      await request(app)
+        .post(`/user/auth`)
+        .send(badAuthData)
+        .expect(HttpCode.UNAUTHORIZED);
+    });
+
+    test(`If password doesn't match status is 401`, async () => {
+      const badAuthData = {
+        email: `admin@typoteka.ru`,
+        password: `password`
+      };
+
+      await request(app)
+        .post(`/user/auth`)
+        .send(badAuthData)
+        .expect(HttpCode.UNAUTHORIZED);
+    });
+  });
 });
