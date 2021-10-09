@@ -1,19 +1,11 @@
 'use strict';
 
 const {Router} = require(`express`);
-const session = require(`express-session`);
-const {nanoid} = require(`nanoid`);
 const upload = require(`../middlewares/upload`);
 const api = require(`../api`).getAPI();
 const {formatDate, formatDatetime, prepareErrors} = require(`../../utils`);
 
 const articlesRouter = new Router();
-
-articlesRouter.use(session({
-  resave: false,
-  saveUninitialized: false,
-  secret: nanoid()
-}));
 
 const getPostWithCategories = async (postId, countCategories) => {
   const [post, categories] = await Promise.all([

@@ -1,8 +1,6 @@
 'use strict';
 
 const {Router} = require(`express`);
-const session = require(`express-session`);
-const {nanoid} = require(`nanoid`);
 const upload = require(`../middlewares/upload`);
 const {prepareErrors} = require(`../../utils`);
 const api = require(`../api`).getAPI();
@@ -10,12 +8,6 @@ const {formatDate, formatDatetime} = require(`../../utils`);
 const {POSTS_PER_PAGE} = require(`../../constants`);
 
 const mainRouter = new Router();
-
-mainRouter.use(session({
-  resave: false,
-  saveUninitialized: false,
-  secret: nanoid()
-}));
 
 mainRouter.get(`/`, async (req, res) => {
   let {page = 1} = req.query;
