@@ -24,7 +24,7 @@ mainRouter.get(`/`, async (req, res) => {
 });
 
 mainRouter.get(`/register`, (req, res) => {
-  let {userData, validationMessages} = req.session;
+  const {userData, validationMessages} = req.session;
   delete req.session.userData;
   delete req.session.validationMessages;
 
@@ -53,7 +53,34 @@ mainRouter.post(`/register`, upload.single(`upload`), async (req, res) => {
   }
 });
 
-mainRouter.get(`/login`, (req, res) => res.render(`login`));
+mainRouter.get(`/login`, (req, res) => {
+  const {userEmail, validationMessages} = req.session;
+  delete req.session.userEmail;
+  delete req.session.validationMessages;
+
+  res.render(`login`, {userEmail, validationMessages});
+});
+
+mainRouter.post(`/login`, async (req, res) => {
+  const {email, password} = req.body;
+
+  try {
+    const user = await api.auth({email, password});
+    req.session.user = user;
+    req.session.save(() => {
+      res.redirect(`/`);
+    });
+  } catch (err) {
+    req.session.userEmail = email;
+    req.session.validationMessages = prepareErrors(err);
+    res.redirect(`back`);
+  }
+});
+
+mainRouter.get(`/logout`, (req, res) => {
+  delete req.session.user;
+  res.redirect(`/`);
+});
 
 mainRouter.get(`/search`, async (req, res) => {
   const {search} = req.query;
