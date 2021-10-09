@@ -3,6 +3,7 @@
 const {Router} = require(`express`);
 const {HttpCode} = require(`../../constants`);
 const userValidator = require(`../middlewares/user-validator`);
+const authValidator = require(`../middlewares/auth-validator`);
 const passwordUtils = require(`../lib/password`);
 
 module.exports = (app, service) => {
@@ -20,4 +21,6 @@ module.exports = (app, service) => {
     res.status(HttpCode.CREATED)
       .json(result);
   });
+
+  route.post(`/auth`, authValidator(service));
 };
