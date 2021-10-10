@@ -1,6 +1,7 @@
 'use strict';
 
 const {Router} = require(`express`);
+const auth = require(`../middlewares/auth`);
 const upload = require(`../middlewares/upload`);
 const api = require(`../api`).getAPI();
 const {formatDate, formatDatetime, prepareErrors} = require(`../../utils`);
@@ -15,7 +16,7 @@ const getPostWithCategories = async (postId, countCategories) => {
   return [post, categories];
 };
 
-articlesRouter.get(`/add`, async (req, res) => {
+articlesRouter.get(`/add`, auth(true), async (req, res) => {
   const {post, validationMessages} = req.session;
   delete req.session.post;
   delete req.session.validationMessages;
@@ -23,7 +24,7 @@ articlesRouter.get(`/add`, async (req, res) => {
   res.render(`articles/new-post`, {post, categories, validationMessages});
 });
 
-articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
+articlesRouter.post(`/add`, auth(true), upload.single(`upload`), async (req, res) => {
   const {body, file} = req;
   const {user} = req.session;
 
@@ -62,7 +63,7 @@ articlesRouter.get(`/:id`, async (req, res) => {
   res.render(`articles/post`, {id, post, categories, comment, validationMessages, user, formatDate, formatDatetime});
 });
 
-articlesRouter.post(`/:id/comments`, async (req, res) => {
+articlesRouter.post(`/:id/comments`, auth(), async (req, res) => {
   const {id} = req.params;
   const {message} = req.body;
   const {user} = req.session;
@@ -77,7 +78,7 @@ articlesRouter.post(`/:id/comments`, async (req, res) => {
   }
 });
 
-articlesRouter.get(`/edit/:id`, async (req, res) => {
+articlesRouter.get(`/edit/:id`, auth(true), async (req, res) => {
   const {id} = req.params;
   let {post, validationMessages} = req.session;
   let categories;
@@ -95,7 +96,7 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
   res.render(`articles/new-post`, {id, post, categories, validationMessages});
 });
 
-articlesRouter.post(`/edit/:id`, upload.single(`upload`), async (req, res) => {
+articlesRouter.post(`/edit/:id`, auth(true), upload.single(`upload`), async (req, res) => {
   const {body, file} = req;
   const {id} = req.params;
   const {user} = req.session;

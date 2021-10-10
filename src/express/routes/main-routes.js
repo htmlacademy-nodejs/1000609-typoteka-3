@@ -1,6 +1,7 @@
 'use strict';
 
 const {Router} = require(`express`);
+const auth = require(`../middlewares/auth`);
 const upload = require(`../middlewares/upload`);
 const {prepareErrors} = require(`../../utils`);
 const api = require(`../api`).getAPI();
@@ -100,6 +101,6 @@ mainRouter.get(`/search`, async (req, res) => {
   }
 });
 
-mainRouter.get(`/categories`, (req, res) => res.render(`all-categories`));
+mainRouter.get(`/categories`, auth(true), (req, res) => res.render(`all-categories`));
 
 module.exports = mainRouter;
