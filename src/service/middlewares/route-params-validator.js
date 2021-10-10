@@ -4,7 +4,7 @@ const Joi = require(`joi`);
 const {HttpCode} = require(`../../constants`);
 
 const schema = Joi.object({
-  postId: Joi.number().integer().min(1),
+  articleId: Joi.number().integer().min(1),
   commentId: Joi.number().integer().min(1)
 });
 

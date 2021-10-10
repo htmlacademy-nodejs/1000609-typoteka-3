@@ -5,6 +5,7 @@ const {HttpCode} = require(`../../constants`);
 const postValidator = require(`../middlewares/post-validator`);
 const postExist = require(`../middlewares/post-exists`);
 const commentValidator = require(`../middlewares/comment-validator`);
+const routeParamsValidator = require(`../middlewares/route-params-validator`);
 
 module.exports = (app, postService, commentService) => {
   const route = new Router();
@@ -25,7 +26,7 @@ module.exports = (app, postService, commentService) => {
       .json(result);
   });
 
-  route.get(`/:articleId`, async (req, res) => {
+  route.get(`/:articleId`, routeParamsValidator, async (req, res) => {
     const {articleId: postId} = req.params;
     const post = await postService.findOne(postId);
 
@@ -45,7 +46,7 @@ module.exports = (app, postService, commentService) => {
       .json(post);
   });
 
-  route.put(`/:articleId`, postValidator, async (req, res) => {
+  route.put(`/:articleId`, postValidator, routeParamsValidator, async (req, res) => {
     const {articleId: postId} = req.params;
     const updated = await postService.update(postId, req.body);
 
@@ -58,7 +59,7 @@ module.exports = (app, postService, commentService) => {
       .send(`Updated`);
   });
 
-  route.delete(`/:articleId`, async (req, res) => {
+  route.delete(`/:articleId`, routeParamsValidator, async (req, res) => {
     const {articleId: postId} = req.params;
     const deleted = await postService.drop(postId);
 
@@ -71,7 +72,7 @@ module.exports = (app, postService, commentService) => {
       .send(`Deleted`);
   });
 
-  route.get(`/:articleId/comments`, postExist(postService), async (req, res) => {
+  route.get(`/:articleId/comments`, postExist(postService), routeParamsValidator, async (req, res) => {
     const {articleId: postId} = req.params;
     const comments = await commentService.findAll(postId);
 
@@ -79,7 +80,7 @@ module.exports = (app, postService, commentService) => {
       .json(comments);
   });
 
-  route.delete(`/:articleId/comments/:commentId`, postExist(postService), async (req, res) => {
+  route.delete(`/:articleId/comments/:commentId`, postExist(postService), routeParamsValidator, async (req, res) => {
     const {commentId} = req.params;
     const deleted = await commentService.drop(commentId);
 
@@ -92,7 +93,7 @@ module.exports = (app, postService, commentService) => {
       .send(`Deleted`);
   });
 
-  route.post(`/:articleId/comments`, [postExist(postService), commentValidator], async (req, res) => {
+  route.post(`/:articleId/comments`, postExist(postService), commentValidator, routeParamsValidator, async (req, res) => {
     const {articleId: postId} = req.params;
     const comment = await commentService.create(postId, req.body);
 
