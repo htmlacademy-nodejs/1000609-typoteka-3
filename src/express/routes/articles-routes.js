@@ -25,6 +25,7 @@ articlesRouter.get(`/add`, async (req, res) => {
 
 articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
   const {body, file} = req;
+  const {user} = req.session;
 
   const postData = {
     title: body.title,
@@ -33,6 +34,7 @@ articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
     announcement: body.announcement,
     fullText: body[`full-text`] ? body[`full-text`] : null,
     categories: body.category,
+    userId: user.id
   };
 
   try {
@@ -45,24 +47,28 @@ articlesRouter.post(`/add`, upload.single(`upload`), async (req, res) => {
   }
 });
 
-articlesRouter.get(`/category/:id`, (req, res) => res.render(`articles/articles-by-category`));
+articlesRouter.get(`/category/:id`, (req, res) => {
+  const {user} = req.session;
+  res.render(`articles/articles-by-category`, {user});
+});
 
 articlesRouter.get(`/:id`, async (req, res) => {
   const {id} = req.params;
-  const {comment, validationMessages} = req.session;
+  const {comment, validationMessages, user} = req.session;
   delete req.session.comment;
   delete req.session.validationMessages;
   const [post, categories] = await getPostWithCategories(id, true);
 
-  res.render(`articles/post`, {id, post, categories, comment, validationMessages, formatDate, formatDatetime});
+  res.render(`articles/post`, {id, post, categories, comment, validationMessages, user, formatDate, formatDatetime});
 });
 
 articlesRouter.post(`/:id/comments`, async (req, res) => {
   const {id} = req.params;
   const {message} = req.body;
+  const {user} = req.session;
 
   try {
-    await api.createComment(id, {text: message});
+    await api.createComment(id, {text: message, userId: user.id});
     res.redirect(`/articles/${id}`);
   } catch (err) {
     req.session.comment = message;
@@ -92,6 +98,7 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
 articlesRouter.post(`/edit/:id`, upload.single(`upload`), async (req, res) => {
   const {body, file} = req;
   const {id} = req.params;
+  const {user} = req.session;
 
   const postData = {
     title: body.title,
@@ -100,6 +107,7 @@ articlesRouter.post(`/edit/:id`, upload.single(`upload`), async (req, res) => {
     announcement: body.announcement,
     fullText: body[`full-text`] ? body[`full-text`] : null,
     categories: body.category,
+    userId: user.id
   };
 
   try {

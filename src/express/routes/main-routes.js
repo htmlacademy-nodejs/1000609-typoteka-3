@@ -11,6 +11,7 @@ const mainRouter = new Router();
 
 mainRouter.get(`/`, async (req, res) => {
   let {page = 1} = req.query;
+  const {user} = req.session;
   page = +page;
   const limit = POSTS_PER_PAGE;
   const offset = (page - 1) * POSTS_PER_PAGE;
@@ -20,7 +21,7 @@ mainRouter.get(`/`, async (req, res) => {
     api.getCategories(true)
   ]);
   const totalPages = Math.ceil(count / POSTS_PER_PAGE);
-  res.render(`main`, {posts, categories, page, totalPages, formatDate, formatDatetime});
+  res.render(`main`, {posts, categories, user, page, totalPages, formatDate, formatDatetime});
 });
 
 mainRouter.get(`/register`, (req, res) => {
@@ -84,17 +85,18 @@ mainRouter.get(`/logout`, (req, res) => {
 
 mainRouter.get(`/search`, async (req, res) => {
   const {search} = req.query;
+  const {user} = req.session;
 
   if (search) {
     try {
       const results = await api.search(search);
 
-      res.render(`search`, {results, search, formatDate, formatDatetime});
+      res.render(`search`, {results, search, user, formatDate, formatDatetime});
     } catch (error) {
-      res.render(`search`, {results: [], search});
+      res.render(`search`, {results: [], search, user});
     }
   } else {
-    res.render(`search`);
+    res.render(`search`, {user});
   }
 });
 

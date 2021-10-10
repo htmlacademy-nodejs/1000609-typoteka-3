@@ -1,0 +1,34 @@
+header.header
+  a.header__logo.logo(href="/")
+    img.logo__image(src="/img/icons/logo-image-only.svg" alt="логотип Тайпотеки")
+    span.logo__name Типотека
+  if (user && user.isAdmin)
+    button.button.button--colored.header__button-new Новая запись
+    .header__dropdown
+      a.button.button--burger.header__burger(href='#') Открыть меню
+      ul.navigation.header__navigation
+        li.navigation__item
+          a(href='main.html') Пункт меню
+        li.navigation__item
+          a(href='main.html') Пункт меню
+        li.navigation__item
+          a(href='main.html') Пункт меню
+        li.navigation__item
+          a(href='main.html') Пункт меню
+  else
+    nav.header__nav
+      ul.header__nav-list
+        li.header__list-item
+          if (user)
+            p #{`${user.name} ${user.surname}`.trim()}
+          else
+            a.header__registration(href="/register") Регистрация
+        li.header__list-item
+          if (user)
+            a.header__exit(href="/logout") Выйти
+          else
+            a.header__enter(href="/login") Вход с паролем
+  if (user && !user.isAdmin)
+    a.header__avatar.avatar
+      img(src=`img/${user.avatar}` alt="аватар пользователя")
+  a.header__search.button.button--search(href="/search" aria-label="поиск по сайту")
