@@ -1,6 +1,7 @@
 'use strict';
 
 const {Router} = require(`express`);
+const csrf = require(`csurf`);
 const auth = require(`../middlewares/auth`);
 const upload = require(`../middlewares/upload`);
 const {prepareErrors} = require(`../../utils`);
@@ -9,6 +10,7 @@ const {formatDate, formatDatetime} = require(`../../utils`);
 const {POSTS_PER_PAGE} = require(`../../constants`);
 
 const mainRouter = new Router();
+const csrfProtection = csrf();
 
 mainRouter.get(`/`, async (req, res) => {
   let {page = 1} = req.query;
@@ -25,15 +27,15 @@ mainRouter.get(`/`, async (req, res) => {
   res.render(`main`, {posts, categories, user, page, totalPages, formatDate, formatDatetime});
 });
 
-mainRouter.get(`/register`, (req, res) => {
+mainRouter.get(`/register`, csrfProtection, (req, res) => {
   const {userData, validationMessages} = req.session;
   delete req.session.userData;
   delete req.session.validationMessages;
 
-  res.render(`sign-up`, {user: userData, validationMessages});
+  res.render(`sign-up`, {user: userData, validationMessages, csrfToken: req.csrfToken()});
 });
 
-mainRouter.post(`/register`, upload.single(`upload`), async (req, res) => {
+mainRouter.post(`/register`, upload.single(`upload`), csrfProtection, async (req, res) => {
   const {body, file} = req;
 
   const userData = {
@@ -55,15 +57,15 @@ mainRouter.post(`/register`, upload.single(`upload`), async (req, res) => {
   }
 });
 
-mainRouter.get(`/login`, (req, res) => {
+mainRouter.get(`/login`, csrfProtection, (req, res) => {
   const {userEmail, validationMessages} = req.session;
   delete req.session.userEmail;
   delete req.session.validationMessages;
 
-  res.render(`login`, {userEmail, validationMessages});
+  res.render(`login`, {userEmail, validationMessages, csrfToken: req.csrfToken()});
 });
 
-mainRouter.post(`/login`, async (req, res) => {
+mainRouter.post(`/login`, csrfProtection, async (req, res) => {
   const {email, password} = req.body;
 
   try {
