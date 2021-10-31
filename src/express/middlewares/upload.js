@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
   destination: uploadDirAbsolute,
   filename: (req, file, cb) => {
     const uniqueName = nanoid(10);
-    const extension = file.originalname.split(`.`).pop();
+    const extension = path.extname(file.originalname);
     cb(null, `${uniqueName}.${extension}`);
   }
 });
