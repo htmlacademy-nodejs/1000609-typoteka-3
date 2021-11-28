@@ -15,17 +15,17 @@ block content
               input(type="hidden" name="_csrf" value=csrfToken)
               .form__field
                 label
-                  input(type="email" name="email" placeholder="Электронная почта" required="" value=(user && user.email ? user.email : null))
+                  input(type="email" name="email" placeholder="Электронная почта" required="" value=(userData && userData.email ? userData.email : null))
               if (validationMessages && 'email' in validationMessages)
                 +insertErrorMessage(validationMessages.email)
               .form__field
                 label
-                  input(type="text" name="name" placeholder="Имя" required="" value=(user && user.name ? user.name : null))
+                  input(type="text" name="name" placeholder="Имя" required="" value=(userData && userData.name ? userData.name : null))
               if (validationMessages && 'name' in validationMessages)
                 +insertErrorMessage(validationMessages.name)
               .form__field
                 label
-                  input(type="text" name="surname" placeholder="Фамилия" value=(user && user.surname ? user.surname : null))
+                  input(type="text" name="surname" placeholder="Фамилия" value=(userData && userData.surname ? userData.surname : null))
               if (validationMessages && 'surname' in validationMessages)
                 +insertErrorMessage(validationMessages.surname)
               .form__field

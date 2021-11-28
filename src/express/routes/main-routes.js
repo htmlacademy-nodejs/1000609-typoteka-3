@@ -33,11 +33,15 @@ mainRouter.get(`/`, async (req, res) => {
 });
 
 mainRouter.get(`/register`, csrfProtection, (req, res) => {
-  const {userData, validationMessages} = req.session;
+  const {user, userData, validationMessages} = req.session;
   delete req.session.userData;
   delete req.session.validationMessages;
 
-  res.render(`sign-up`, {user: userData, validationMessages, csrfToken: req.csrfToken()});
+  if (user) {
+    res.redirect(`/`);
+  } else {
+    res.render(`sign-up`, {userData, validationMessages, csrfToken: req.csrfToken()});
+  }
 });
 
 mainRouter.post(`/register`, upload.single(`upload`), csrfProtection, async (req, res) => {
@@ -63,11 +67,15 @@ mainRouter.post(`/register`, upload.single(`upload`), csrfProtection, async (req
 });
 
 mainRouter.get(`/login`, csrfProtection, (req, res) => {
-  const {userEmail, validationMessages} = req.session;
+  const {user, userEmail, validationMessages} = req.session;
   delete req.session.userEmail;
   delete req.session.validationMessages;
 
-  res.render(`login`, {userEmail, validationMessages, csrfToken: req.csrfToken()});
+  if (user) {
+    res.redirect(`/`);
+  } else {
+    res.render(`login`, {userEmail, validationMessages, csrfToken: req.csrfToken()});
+  }
 });
 
 mainRouter.post(`/login`, csrfProtection, async (req, res) => {
