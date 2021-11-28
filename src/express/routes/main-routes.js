@@ -23,8 +23,13 @@ mainRouter.get(`/`, async (req, res) => {
     api.getPosts({categories: true, comments: true, limit, offset}),
     api.getCategories(true)
   ]);
-  const totalPages = Math.ceil(count / POSTS_PER_PAGE);
-  res.render(`main`, {posts, categories, user, page, totalPages, formatDate, formatDatetime});
+
+  if (posts.length) {
+    const totalPages = Math.ceil(count / POSTS_PER_PAGE);
+    res.render(`main`, {posts, categories, user, page, totalPages, formatDate, formatDatetime});
+  } else {
+    res.render(`main-empty`, {user});
+  }
 });
 
 mainRouter.get(`/register`, csrfProtection, (req, res) => {
