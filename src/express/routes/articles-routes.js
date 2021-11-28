@@ -6,6 +6,7 @@ const auth = require(`../middlewares/auth`);
 const upload = require(`../middlewares/upload`);
 const api = require(`../api`).getAPI();
 const {formatDate, formatDatetime, prepareErrors} = require(`../../utils`);
+const {POSTS_PER_PAGE} = require(`../../constants`);
 
 const articlesRouter = new Router();
 const csrfProtection = csrf();
@@ -52,9 +53,22 @@ articlesRouter.post(`/add`, auth(true), upload.single(`upload`), csrfProtection,
   }
 });
 
-articlesRouter.get(`/category/:id`, (req, res) => {
+articlesRouter.get(`/category/:id`, async (req, res) => {
+  const {id} = req.params;
+  let {page = 1} = req.query;
   const {user} = req.session;
-  res.render(`articles/articles-by-category`, {user});
+  page = +page;
+  const limit = POSTS_PER_PAGE;
+  const offset = (page - 1) * POSTS_PER_PAGE;
+
+  const [{count, posts}, categories] = await Promise.all([
+    api.getPosts({categoryId: id, categories: true, comments: true, limit, offset}),
+    api.getCategories(true)
+  ]);
+
+  const totalPages = Math.ceil(count / POSTS_PER_PAGE);
+
+  res.render(`articles/articles-by-category`, {posts, categories, id, user, page, totalPages, formatDate, formatDatetime});
 });
 
 articlesRouter.get(`/:id`, csrfProtection, async (req, res) => {

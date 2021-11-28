@@ -13,11 +13,11 @@ module.exports = (app, postService, commentService) => {
   app.use(`/articles`, route);
 
   route.get(`/`, async (req, res) => {
-    const {categories, comments, limit, offset} = req.query;
+    const {categoryId, categories, comments, limit, offset} = req.query;
     let result;
 
     if (limit || offset) {
-      result = await postService.findPage({limit, offset});
+      result = await postService.findPage({limit, offset, categoryId});
     } else {
       result = await postService.findAll(categories, comments);
     }

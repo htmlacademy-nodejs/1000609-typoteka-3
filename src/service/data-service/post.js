@@ -5,6 +5,7 @@ const Alias = require(`../models/alias`);
 class PostService {
   constructor(sequelize) {
     this._Post = sequelize.models.Post;
+    this._PostCategory = sequelize.models.PostCategory;
     this._Comment = sequelize.models.Comment;
     this._User = sequelize.models.User;
   }
@@ -71,12 +72,19 @@ class PostService {
     );
   }
 
-  async findPage({limit, offset}) {
+  async findPage({limit, offset, categoryId}) {
     const {count, rows} = await this._Post.findAndCountAll({
       limit,
       offset,
       include: [
         Alias.CATEGORIES,
+        ...(categoryId ? [{
+          model: this._PostCategory,
+          as: Alias.POST_CATEGORIES,
+          where: {
+            CategoryId: categoryId
+          }
+        }] : []),
         {
           model: this._Comment,
           as: Alias.COMMENTS,

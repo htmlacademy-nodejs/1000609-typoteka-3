@@ -16,7 +16,7 @@ class CategoryService {
           `id`,
           `name`,
           [
-            Sequelize.fn(`COUNT`, `*`), `count`
+            Sequelize.fn(`COUNT`, Sequelize.col(`CategoryId`)), `count`
           ]
         ],
         group: [Sequelize.col(`Category.id`)],

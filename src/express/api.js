@@ -21,8 +21,8 @@ class API {
     return response.data;
   }
 
-  getPosts({categories, comments, limit, offset} = {}) {
-    return this._load(`/articles`, {params: {categories, comments, limit, offset}});
+  getPosts({categoryId, categories, comments, limit, offset} = {}) {
+    return this._load(`/articles`, {params: {categoryId, categories, comments, limit, offset}});
   }
 
   getPost(id) {
