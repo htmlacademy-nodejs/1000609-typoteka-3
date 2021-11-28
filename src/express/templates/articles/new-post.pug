@@ -43,7 +43,7 @@ block content
                       .new-publication__checkbox.new-publication__checkbox--auto
                         input(id=`category-${index}` type="checkbox" name="category[]" checked=(post && post.categories ? post.categories.includes(category.id.toString()) : false) value=category.id)
                         label(for=`category-${index}`) #{category.name}
-                    a.new-publication__form-link.button.button--transparent(href="#") Добавить категорию
+                    a.new-publication__form-link.button.button--transparent(href="/categories") Добавить категорию
                   if (validationMessages && 'categories' in validationMessages)
                     +insertErrorMessage(validationMessages.categories)
                 .form__wrapper.form__wrapper--text

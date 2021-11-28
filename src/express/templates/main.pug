@@ -13,7 +13,7 @@ block content
         ul.themes
           each category in categories
             li.themes__item
-              a.themes__item-link(href="#")
+              a.themes__item-link(href=`/articles/category/${category.id}`)
                 | #{category.name}
                 =" "
                 sup #{category.count}
@@ -83,14 +83,14 @@ block content
               ul.preview__breadcrumbs
                 each category in post.categories
                   li.preview__breadcrumbs-item
-                    a.preview__breadcrumbs-link(href="#") #{category.name}
+                    a.preview__breadcrumbs-link(href=`/articles/category/${category.id}`) #{category.name}
               //.preview__background
               //  img.preview__background-image(src="/img/skyscraper@1x.jpg" width="460" height="240" srcset="/img/skyscraper@1x.jpg 1x, /img/skyscraper@2x.jpg 2x" alt="Фотография небоскреба")
               +publicationDate(formatDatetime(post.createdAt), formatDate(post.createdAt))(class="preview__time")
               h3.preview__name
-                a.preview__name-link(href="#") #{post.title}
+                a.preview__name-link(href=`/articles/${post.id}`) #{post.title}
               p.preview__text #{post.announcement}
-              a.preview__comment(href="#")
+              a.preview__comment(href=`/articles/${post.id}`)
                 | Комментарии
                 =" "
                 span.preview__cloud

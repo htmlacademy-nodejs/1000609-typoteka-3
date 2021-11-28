@@ -82,7 +82,7 @@ const readContent = async (filePath, logger) => {
 
 /**
  * Форматирует строковое представление даты
- * из вида yyyy-mm-ddTHH:MM:ss.sssZ в dd.mm.yyyy HH:MM
+ * из вида yyyy-mm-ddTHH:MM:ss.sssZ в dd.mm.yyyy, HH:MM
  *
  * @param {String} fullDate
  * @return {String}
