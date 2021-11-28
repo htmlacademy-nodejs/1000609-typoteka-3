@@ -37,5 +37,6 @@ block content
                 span.preview__cloud
                 =" "
                 b.preview__comment-count #{post.comments.length}
-      +pagination(page, totalPages, 2, '?')
+      if (totalPages > 1)
+        +pagination(page, totalPages, 2, '?')
     include ../partials/footer.pug
