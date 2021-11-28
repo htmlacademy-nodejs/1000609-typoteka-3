@@ -21,33 +21,44 @@ block content
                       =" "
                       sup #{categories[categories.findIndex((category) => category.id === postCategory.id)].count}
                     button.themes__remove-btn(type="button") Удалить категорию
-            .post__picture
-              img(src="/img/sea-fullsize@1x.jpg" alt="пейзаж море, скалы, пляж")
+            if (post.picture)
+              .post__picture
+                img(src=`/img/${post.picture}` alt=`${post.title}`)
             .post__text
               h3 #{post.announcement}
               p #{post.fullText}
         .post__wrapper.post__wrapper--comments
           section.post__comments.comments
-            h2.comments__title.title.title--middle Комментарии
-            ul.comments__list
-              each comment in post.comments
-                li.comments__comment
-                  .comments__avatar.avatar
-                    img(src=`/img/${comment.users.avatar}` alt="аватар пользователя")
-                  .comments__text
-                    .comments__head
-                      p #{`${comment.users.name} ${comment.users.surname} •`}
-                      +publicationDate(formatDatetime(comment.createdAt), formatDate(comment.createdAt))(class="comments__date")
-                    p.comments__message #{comment.text}
-            .comments__footer.comments__footer--user
-              form(action=`/articles/${id}/comments` method="POST" enctype="application/x-www-form-urlencoded" autocomplete="off")
-                input(type="hidden" name="_csrf" value=csrfToken)
-                if (user)
+            if (post.comments.length)
+              h2.comments__title.title.title--middle Комментарии
+              ul.comments__list
+                each comment in post.comments
+                  li.comments__comment
+                    .comments__avatar.avatar
+                      img(src=`/img/${comment.users.avatar}` alt="аватар пользователя")
+                    .comments__text
+                      .comments__head
+                        p #{`${comment.users.name} ${comment.users.surname} •`}
+                        +publicationDate(formatDatetime(comment.createdAt), formatDate(comment.createdAt))(class="comments__date")
+                      p.comments__message #{comment.text}
+            else
+              h2.comments__title.title.title--middle Комментарии отсутствуют
+            if (user)
+              .comments__footer.comments__footer--user
+                form(action=`/articles/${id}/comments` method="POST" enctype="application/x-www-form-urlencoded" autocomplete="off")
+                  input(type="hidden" name="_csrf" value=csrfToken)
                   .comments__avatar.avatar
                     img(src=`/img/${user.avatar}` alt="аватар пользователя")
-                label
-                  textarea(rows="1" name="message" placeholder="Присоединиться к обсуждению") #{comment ? comment : undefined}
-                button.comments__button.button.button--colored(type="submit") Опубликовать
-                if (validationMessages)
-                  +insertErrorMessage(validationMessages.text)
+                  label
+                    textarea(rows="1" name="message" placeholder="Присоединиться к обсуждению") #{comment ? comment : undefined}
+                  button.comments__button.button.button--colored(type="submit") Опубликовать
+                  if (validationMessages)
+                    +insertErrorMessage(validationMessages.text)
+            else
+              .comments__footer.comments__footer--visitor
+                a.comments__button.button.button--colored(href="/login") Войти
+                .comments__registration
+                  p.text.text--signature
+                    b.title.title--small Регистрация
+                    | Чтобы присоединиться к переписке нужно зарегистрироваться
     include ../partials/footer.pug
