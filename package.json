@@ -7,6 +7,7 @@
     "test": "npm run eslint && npm run test::rest",
     "test::rest": "jest --verbose ./src/service/api",
     "eslint": "eslint --ext .js src/",
+    "filldb": "cross-env LOG_LEVEL=debug node -r dotenv/config ./src/service/service.js --filldb",
     "start": "npm run start-servers",
     "start-servers": "concurrently \"npm run start-back-server\" \"npm run start-front-server\"",
     "start-servers::debug": "concurrently \"npm run start-back-server::debug\" \"npm run start-front-server::debug\"",
