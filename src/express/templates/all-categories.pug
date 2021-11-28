@@ -2,23 +2,7 @@ extends layout.pug
 
 block content
   .wrapper.wrapper--nobackground
-    header.header
-      a.header__logo.logo(href="/")
-        img.logo__image(src="/img/icons/logo-image-only.svg" alt="логотип Тайпотеки")
-        span.logo__name Типотека
-      a.button.button--colored.header__button-new(href="/articles/add") Новая запись
-      .header__dropdown
-        a.button.button--burger.header__burger(href="#") Открыть меню
-        ul.navigation.header__navigation
-          li.navigation__item
-            a(href="#") Пункт меню
-          li.navigation__item
-            a(href="#") Пункт меню
-          li.navigation__item
-            a(href="#") Пункт меню
-          li.navigation__item
-            a(href="#") Пункт меню
-      a.header__search.button.button--search(href="/search" aria-label="поиск по сайту")
+    include partials/header.pug
     main.main-page.main-page--padding
       section.main-page__category.category
         h1.category__title Категории

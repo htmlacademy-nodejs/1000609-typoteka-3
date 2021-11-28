@@ -19,11 +19,11 @@ const getPostWithCategories = async (postId, countCategories) => {
 };
 
 articlesRouter.get(`/add`, auth(true), csrfProtection, async (req, res) => {
-  const {post, validationMessages} = req.session;
+  const {post, user, validationMessages} = req.session;
   delete req.session.post;
   delete req.session.validationMessages;
   const categories = await api.getCategories();
-  res.render(`articles/new-post`, {post, categories, validationMessages, csrfToken: req.csrfToken()});
+  res.render(`articles/new-post`, {post, categories, user, validationMessages, csrfToken: req.csrfToken()});
 });
 
 articlesRouter.post(`/add`, auth(true), upload.single(`upload`), csrfProtection, async (req, res) => {
@@ -82,7 +82,7 @@ articlesRouter.post(`/:id/comments`, auth(), csrfProtection, async (req, res) =>
 
 articlesRouter.get(`/edit/:id`, auth(true), csrfProtection, async (req, res) => {
   const {id} = req.params;
-  let {post, validationMessages} = req.session;
+  let {post, user, validationMessages} = req.session;
   let categories;
   delete req.session.post;
   delete req.session.validationMessages;
@@ -95,7 +95,7 @@ articlesRouter.get(`/edit/:id`, auth(true), csrfProtection, async (req, res) => 
     categories = await api.getCategories();
   }
 
-  res.render(`articles/new-post`, {id, post, categories, validationMessages, csrfToken: req.csrfToken()});
+  res.render(`articles/new-post`, {id, post, categories, user, validationMessages, csrfToken: req.csrfToken()});
 });
 
 articlesRouter.post(`/edit/:id`, auth(true), upload.single(`upload`), csrfProtection, async (req, res) => {

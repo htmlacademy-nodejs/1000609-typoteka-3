@@ -108,6 +108,9 @@ mainRouter.get(`/search`, async (req, res) => {
   }
 });
 
-mainRouter.get(`/categories`, auth(true), (req, res) => res.render(`all-categories`));
+mainRouter.get(`/categories`, auth(true), (req, res) => {
+  const {user} = req.session;
+  res.render(`all-categories`, {user});
+});
 
 module.exports = mainRouter;
