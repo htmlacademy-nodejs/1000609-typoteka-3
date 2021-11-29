@@ -1,6 +1,10 @@
 'use strict';
 
+const Sequelize = require(`sequelize`);
 const Alias = require(`../models/alias`);
+
+const POPULAR_POSTS_NUMBER = 4;
+const POPULAR_POSTS_ANNOUNCEMENT_LENGTH = 100;
 
 class PostService {
   constructor(sequelize) {
@@ -46,6 +50,41 @@ class PostService {
       ]
     });
     return posts.map((post) => post.get());
+  }
+
+  async findPopular() {
+    const posts = await this._Post.findAll({
+      subQuery: false,
+      include: {
+        model: this._Comment,
+        as: Alias.COMMENTS,
+        attributes: [],
+      },
+      attributes: {
+        include: [
+          [Sequelize.fn(`COUNT`, Sequelize.col(`comments.id`)), `commentsCount`]
+        ]
+      },
+      group: [`Post.id`],
+      order: [
+        [Sequelize.fn(`COUNT`, Sequelize.col(`comments.id`)), `DESC`]
+      ],
+      limit: POPULAR_POSTS_NUMBER
+    });
+
+    return posts
+      .map((post) => post.get())
+      .filter((post) => post.commentsCount > 0)
+      .map((post) => {
+        if (post.announcement.length < POPULAR_POSTS_ANNOUNCEMENT_LENGTH) {
+          return post;
+        } else {
+          return {
+            ...post,
+            announcement: `${post.announcement.slice(0, POPULAR_POSTS_ANNOUNCEMENT_LENGTH).trim()}…`
+          };
+        }
+      });
   }
 
   findOne(id) {

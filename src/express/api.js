@@ -25,6 +25,10 @@ class API {
     return this._load(`/articles`, {params: {categoryId, categories, comments, limit, offset}});
   }
 
+  getPopularPosts() {
+    return this._load(`/articles`, {params: {needPopular: true}});
+  }
+
   getPost(id) {
     return this._load(`/articles/${id}`);
   }
