@@ -10,7 +10,7 @@ block content
           each post in posts
             li.notes__list-item
               +publicationDate(formatDatetime(post.createdAt), formatDate(post.createdAt))(class="notes__item-time")
-              a.notes__item-text(href=`/articles/${post.id}`) #{post.title}
+              a.notes__item-text(href=`/articles/edit/${post.id}`) #{post.title}
               button.notes__button.button.button--close-item(type="button")
                 span.visually-hidden Закрыть строку списка
     include ../partials/footer.pug

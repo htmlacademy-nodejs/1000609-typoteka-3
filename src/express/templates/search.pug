@@ -18,5 +18,5 @@ block content
               each result in results
                 .search__result
                   +publicationDate(formatDatetime(result.createdAt), formatDate(result.createdAt))(class="search__date")
-                  a.search__link !{result.title.replace(RegExp(search, "gi"), (substr) => `<b>${substr}</b>`)}
+                  a.search__link(href=`/articles/${result.id}`) !{result.title.replace(RegExp(search, "gi"), (substr) => `<b>${substr}</b>`)}
     include partials/footer.pug
