@@ -19,15 +19,16 @@ mainRouter.get(`/`, async (req, res) => {
   const limit = POSTS_PER_PAGE;
   const offset = (page - 1) * POSTS_PER_PAGE;
 
-  const [popularPosts, {count, posts}, categories] = await Promise.all([
+  const [popularPosts, {count, posts}, categories, lastComments] = await Promise.all([
     api.getPopularPosts(),
     api.getPosts({categories: true, comments: true, limit, offset}),
-    api.getCategories(true)
+    api.getCategories(true),
+    api.getLastComments()
   ]);
 
   if (posts.length) {
     const totalPages = Math.ceil(count / POSTS_PER_PAGE);
-    res.render(`main`, {popularPosts, posts, categories, user, page, totalPages, formatDate, formatDatetime});
+    res.render(`main`, {popularPosts, posts, categories, user, lastComments, page, totalPages, formatDate, formatDatetime});
   } else {
     res.render(`main-empty`, {user});
   }

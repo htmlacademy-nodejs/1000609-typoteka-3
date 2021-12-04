@@ -47,6 +47,10 @@ class API {
     });
   }
 
+  getLastComments() {
+    return this._load(`/comments`);
+  }
+
   createComment(id, data) {
     return this._load(`/articles/${id}/comments`, {
       method: HttpMethod.POST,

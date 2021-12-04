@@ -78,12 +78,11 @@ class PostService {
       .map((post) => {
         if (post.announcement.length < POPULAR_POSTS_ANNOUNCEMENT_LENGTH) {
           return post;
-        } else {
-          return {
-            ...post,
-            announcement: `${post.announcement.slice(0, POPULAR_POSTS_ANNOUNCEMENT_LENGTH).trim()}…`
-          };
         }
+        return {
+          ...post,
+          announcement: `${post.announcement.slice(0, POPULAR_POSTS_ANNOUNCEMENT_LENGTH).trim()}…`
+        };
       });
   }
 
@@ -106,7 +105,10 @@ class PostService {
                 }
               ]
             }
-          ]
+          ],
+          order: [
+            [Alias.COMMENTS, `createdAt`, `DESC`]
+          ],
         }
     );
   }
