@@ -58,6 +58,12 @@ class API {
     });
   }
 
+  dropComment(articleId, commentId) {
+    return this._load(`/articles/${articleId}/comments/${commentId}`, {
+      method: HttpMethod.DELETE
+    });
+  }
+
   getCategories(count) {
     return this._load(`/categories`, {params: {count}});
   }

@@ -10,12 +10,13 @@ block content
           each post in posts
             each comment in post.comments
               li.publication__list-item
-                .publication__header
-                  img.publication__list-image(src=`/img/${comment.users.avatar}` width="20" height="20" alt="Аватар пользователя")
-                  b.publication__list-name #{`${comment.users.name} ${comment.users.surname}`}
-                  +publicationDate(formatDatetime(comment.createdAt), formatDate(comment.createdAt))
-                a.publication__item-text(href=`/articles/${comment.postId}`) #{comment.text}
-                p.publication__text-strong #{post.title}
-                button.publication__button.button.button--close-item(type="button")
-                  span.visually-hidden Закрыть строку списка
+                form(action=`/my/comments/${comment.id}/article/${post.id}` method="POST")
+                  .publication__header
+                    img.publication__list-image(src=`/img/${comment.users.avatar}` width="20" height="20" alt="Аватар пользователя")
+                    b.publication__list-name #{`${comment.users.name} ${comment.users.surname}`}
+                    +publicationDate(formatDatetime(comment.createdAt), formatDate(comment.createdAt))
+                  a.publication__item-text(href=`/articles/${comment.postId}`) #{comment.text}
+                  p.publication__text-strong #{post.title}
+                  button.publication__button.button.button--close-item(type="submit")
+                    span.visually-hidden Закрыть строку списка
     include ../partials/footer.pug
