@@ -24,10 +24,10 @@ const generateComments = (count, comments, users) => (
 );
 
 const generateMockData = (count, titles, sentences, categories, comments, users) => (
-  Array.from({length: count}, (_, index) => ({
+  Array.from({length: count}, () => ({
     user: users[getRandomInt(0, users.length - 1)].email,
     title: titles[getRandomInt(0, titles.length - 1)],
-    picture: Math.random() > 0.1 ? getPictureFileName(index) : null,
+    picture: Math.random() > 0.4 ? getPictureFileName() : null,
     createdAt: getRandomDate(),
     announcement: shuffleAndSlice(sentences, 4).join(` `),
     fullText: Math.random() > 0.1 ? shuffleAndSlice(sentences).join(` `) : null,

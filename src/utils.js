@@ -34,10 +34,13 @@ const getRandomDate = () => {
 /**
  * Возвращает отформатированное название фотографии публикации
  *
- * @param {Number} number
  * @return {String}
  */
-const getPictureFileName = (number) => `item${number.toString().padStart(2, `0`)}.jpg`;
+const getPictureFileName = () => {
+  const pictureNames = [`forest@1x`, `sea@1x`, `skyscraper@1x`];
+
+  return `${pictureNames[getRandomInt(0, pictureNames.length - 1)]}.jpg`;
+};
 
 /**
  * Возвращает случайно обрезанный перетасованный

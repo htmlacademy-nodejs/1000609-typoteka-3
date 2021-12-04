@@ -41,7 +41,7 @@ block content
             ul.last__list
               each lastComment, index in lastComments
                 li(class=`last__list-item${index === lastComments.length - 1 ? ' last__list-item--end' : ``}`)
-                  img.last__list-image(src=`/img/${lastComment.users.avatar}` width="20" height="20" alt="Аватар пользователя")
+                  img.last__list-image(src=`/img/${lastComment.users.avatar || 'icons/smile.svg'}` width="20" height="20" alt="Аватар пользователя")
                   b.last__list-name #{`${lastComment.users.name} ${lastComment.users.surname}`.trim()}
                   a.last__list-link(href=`/articles/${lastComment.postId}`) #{lastComment.text}
           else

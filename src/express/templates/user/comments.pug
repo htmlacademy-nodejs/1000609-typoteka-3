@@ -12,7 +12,7 @@ block content
               li.publication__list-item
                 form(action=`/my/comments/${comment.id}/article/${post.id}` method="POST")
                   .publication__header
-                    img.publication__list-image(src=`/img/${comment.users.avatar}` width="20" height="20" alt="Аватар пользователя")
+                    img.publication__list-image(src=`/img/${comment.users.avatar || 'icons/smile.svg'}` width="20" height="20" alt="Аватар пользователя")
                     b.publication__list-name #{`${comment.users.name} ${comment.users.surname}`}
                     +publicationDate(formatDatetime(comment.createdAt), formatDate(comment.createdAt))
                   a.publication__item-text(href=`/articles/${comment.postId}`) #{comment.text}

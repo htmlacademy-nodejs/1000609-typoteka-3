@@ -31,7 +31,7 @@ const generateMockData = (count, userCount, titles, sentences, categories, comme
       fullText: Math.random() > 0.1 ? shuffleAndSlice(sentences).join(` `) : null,
       category: shuffleAndSlice(categories).map((category) => ({postId, categoryId: categories.indexOf(category) + 1})),
       comments: generateComments(getRandomInt(CommentsRestrict.MIN, CommentsRestrict.MAX), postId, userCount, comments),
-      picture: Math.random() > 0.1 ? getPictureFileName(index) : null,
+      picture: Math.random() > 0.4 ? getPictureFileName() : null,
       userId: getRandomInt(1, userCount)
     };
   })

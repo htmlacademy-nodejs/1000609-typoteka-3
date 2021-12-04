@@ -22,11 +22,11 @@ const generateComments = (count, comments) => (
 );
 
 const generateMockData = (count, titles, sentences, categories, comments) => (
-  Array.from({length: count}, (_, index) => ({
+  Array.from({length: count}, () => ({
     id: nanoid(MAX_ID_LENGTH),
     title: titles[getRandomInt(0, titles.length - 1)],
     createdAt: getRandomDate(),
-    picture: getPictureFileName(index),
+    picture: getPictureFileName(),
     announcement: shuffleAndSlice(sentences, 4).join(` `),
     fullText: shuffleAndSlice(sentences).join(` `),
     categories: shuffleAndSlice(categories),
