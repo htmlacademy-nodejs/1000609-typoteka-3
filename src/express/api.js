@@ -81,6 +81,13 @@ class API {
     });
   }
 
+  editCategory(id, data) {
+    return this._load(`/categories/${id}`, {
+      method: HttpMethod.PUT,
+      data
+    });
+  }
+
   dropCategory(categoryId) {
     return this._load(`/categories/${categoryId}`, {
       method: HttpMethod.DELETE

@@ -234,6 +234,51 @@ describe(`Category`, () => {
     });
   });
 
+  describe(`API changes an existent category`, () => {
+    const newCategory = {
+      name: `Новая категория`
+    };
+
+    test(`Status code 200`, async () => {
+      const app = await createAPI();
+
+      await request(app)
+        .put(`/categories/2`)
+        .send(newCategory)
+        .expect(HttpCode.OK);
+    });
+  });
+
+  describe(`API refuses to change a non-existent category`, () => {
+    const newCategory = {
+      name: `Новая категория`
+    };
+
+    test(`Status code 404`, async () => {
+      const app = await createAPI();
+
+      await request(app)
+        .put(`/categories/20`)
+        .send(newCategory)
+        .expect(HttpCode.NOT_FOUND);
+    });
+  });
+
+  describe(`API refuses to change an existent category if data is invalid`, () => {
+    const invalidCategory = {
+      name: `Новая категория, название которой состоит из 49 символов`
+    };
+
+    test(`Status code 400`, async () => {
+      const app = await createAPI();
+
+      await request(app)
+        .put(`/categories/3`)
+        .send(invalidCategory)
+        .expect(HttpCode.BAD_REQUEST);
+    });
+  });
+
   describe(`API correctly deletes a category`, () => {
     let app;
     let response;

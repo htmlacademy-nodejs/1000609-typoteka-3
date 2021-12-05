@@ -119,13 +119,16 @@ mainRouter.get(`/search`, async (req, res) => {
 });
 
 mainRouter.get(`/categories`, auth(true), csrfProtection, async (req, res) => {
-  const {category, validationMessages, user} = req.session;
+  const {category, editingId, editingName, user, validationMessages} = req.session;
   delete req.session.category;
+  delete req.session.editingId;
+  delete req.session.editingName;
   delete req.session.validationMessages;
 
+  const isValidationForNew = !!category;
   const categories = await api.getCategories(true);
 
-  res.render(`all-categories`, {category, categories, validationMessages, user, csrfToken: req.csrfToken()});
+  res.render(`all-categories`, {category, categories, editingId, editingName, isValidationForNew, validationMessages, user, csrfToken: req.csrfToken()});
 });
 
 mainRouter.post(`/categories`, auth(true), csrfProtection, async (req, res) => {
@@ -136,6 +139,25 @@ mainRouter.post(`/categories`, auth(true), csrfProtection, async (req, res) => {
     res.redirect(`back`);
   } catch (err) {
     req.session.category = category;
+    req.session.validationMessages = prepareErrors(err);
+    res.redirect(`back`);
+  }
+});
+
+mainRouter.post(`/categories/edit/:id`, auth(true), csrfProtection, async (req, res) => {
+  const {body} = req;
+  const {id} = req.params;
+
+  const newCategory = {
+    name: body[`category-${id}`]
+  };
+
+  try {
+    await api.editCategory(id, newCategory);
+    res.redirect(`/categories`);
+  } catch (err) {
+    req.session.editingId = id;
+    req.session.editingName = newCategory.name;
     req.session.validationMessages = prepareErrors(err);
     res.redirect(`back`);
   }

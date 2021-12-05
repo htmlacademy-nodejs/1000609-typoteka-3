@@ -14,16 +14,19 @@ block content
             label(for="add-form-add-category")
               span.visually-hidden Добавить категорию
             button.category__button.button.button--category(type="submit") Добавить
-          if (validationMessages)
+          if (validationMessages && isValidationForNew)
             +insertErrorMessage(validationMessages.name)
         ul.category__list
           each category in categories
             li.category__list-item
               form(action=`/categories/edit/${category.id}` method="POST")
                 input(type="hidden" name="_csrf" value=csrfToken)
-                input(id=`modify-form-category-${category.id}` type="text" name=`category-${category.id}` value=category.name)
+                input(id=`modify-form-category-${category.id}` type="text" name=`category-${category.id}` value=(category.id.toString() === editingId ? editingName : category.name))
                 label(for=`modify-form-category-${category.id}`)
                   span.visually-hidden Редактировать категорию
                 button.category__button.button.button--category(type="submit") Сохранить
                 button.category__button.button.button--category(type="submit" disabled=(category.count > 0) formaction=`/categories/delete/${category.id}`) Удалить
+            if (validationMessages && editingId === category.id.toString())
+              .form__validation-error
+                +insertErrorMessage(validationMessages.name)
     include partials/footer.pug

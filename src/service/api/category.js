@@ -24,6 +24,19 @@ module.exports = (app, service) => {
       .json(category);
   });
 
+  route.put(`/:categoryId`, categoryValidator, routeParamsValidator, async (req, res) => {
+    const {categoryId} = req.params;
+    const updated = await service.update(categoryId, req.body);
+
+    if (!updated) {
+      return res.status(HttpCode.NOT_FOUND)
+        .send(`Not found with ${categoryId}`);
+    }
+
+    return res.status(HttpCode.OK)
+      .send(`Updated`);
+  });
+
   route.delete(`/:categoryId`, routeParamsValidator, async (req, res) => {
     const {categoryId} = req.params;
     const deleted = await service.drop(categoryId);

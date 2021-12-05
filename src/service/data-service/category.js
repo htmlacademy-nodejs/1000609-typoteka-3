@@ -37,6 +37,13 @@ class CategoryService {
     return this._Category.create(category);
   }
 
+  async update(id, category) {
+    const [affectedRows] = await this._Category.update(category, {
+      where: {id}
+    });
+    return !!affectedRows;
+  }
+
   async drop(id) {
     const deletedRows = await this._Category.destroy({
       where: {id}
