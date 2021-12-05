@@ -47,6 +47,12 @@ class API {
     });
   }
 
+  dropPost(id) {
+    return this._load(`/articles/${id}`, {
+      method: HttpMethod.DELETE
+    });
+  }
+
   getLastComments() {
     return this._load(`/comments`);
   }

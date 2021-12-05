@@ -14,6 +14,17 @@ myRouter.get(`/`, async (req, res) => {
   res.render(`user/my`, {posts, user, formatDate, formatDatetime});
 });
 
+myRouter.post(`/:articleId`, async (req, res) => {
+  const {articleId} = req.params;
+
+  try {
+    await api.dropPost(articleId);
+    res.redirect(`back`);
+  } catch (err) {
+    res.render(`errors/500`);
+  }
+});
+
 myRouter.get(`/comments`, async (req, res) => {
   const {user} = req.session;
   const posts = await api.getPosts({comments: true});
