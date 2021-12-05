@@ -233,4 +233,33 @@ describe(`Category`, () => {
         .expect((res) => expect(res.body.length).toBe(9));
     });
   });
+
+  describe(`API correctly deletes a category`, () => {
+    let app;
+    let response;
+
+    beforeAll(async () => {
+      app = await createAPI();
+
+      response = await request(app)
+        .delete(`/categories/1`);
+    });
+
+    test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+    test(`Posts count is 8 now`, async () => {
+      await request(app)
+        .get(`/categories`)
+        .expect((res) => expect(res.body.length).toBe(8));
+    });
+  });
+
+  describe(`API refuses to delete a non-existent category`, () => {
+    test(`Status code 404`, async () => {
+      const app = await createAPI();
+
+      await request(app)
+        .delete(`/categories/20`)
+        .expect(HttpCode.NOT_FOUND);
+    });
+  });
 });

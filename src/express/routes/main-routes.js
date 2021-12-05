@@ -123,7 +123,7 @@ mainRouter.get(`/categories`, auth(true), csrfProtection, async (req, res) => {
   delete req.session.category;
   delete req.session.validationMessages;
 
-  const categories = await api.getCategories();
+  const categories = await api.getCategories(true);
 
   res.render(`all-categories`, {category, categories, validationMessages, user, csrfToken: req.csrfToken()});
 });
@@ -138,6 +138,17 @@ mainRouter.post(`/categories`, auth(true), csrfProtection, async (req, res) => {
     req.session.category = category;
     req.session.validationMessages = prepareErrors(err);
     res.redirect(`back`);
+  }
+});
+
+mainRouter.post(`/categories/delete/:id`, auth(true), csrfProtection, async (req, res) => {
+  const {id} = req.params;
+
+  try {
+    await api.dropCategory(id);
+    res.redirect(`back`);
+  } catch (err) {
+    res.render(`errors/500`);
   }
 });
 

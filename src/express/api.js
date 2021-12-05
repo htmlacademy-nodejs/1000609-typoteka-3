@@ -81,6 +81,12 @@ class API {
     });
   }
 
+  dropCategory(categoryId) {
+    return this._load(`/categories/${categoryId}`, {
+      method: HttpMethod.DELETE
+    });
+  }
+
   search(query) {
     return this._load(`/search`, {params: {query}});
   }

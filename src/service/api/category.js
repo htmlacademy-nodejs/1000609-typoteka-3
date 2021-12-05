@@ -3,6 +3,7 @@
 const {Router} = require(`express`);
 const {HttpCode} = require(`../../constants`);
 const categoryValidator = require(`../middlewares/category-validator`);
+const routeParamsValidator = require(`../middlewares/route-params-validator`);
 
 module.exports = (app, service) => {
   const route = new Router();
@@ -21,5 +22,18 @@ module.exports = (app, service) => {
 
     res.status(HttpCode.CREATED)
       .json(category);
+  });
+
+  route.delete(`/:categoryId`, routeParamsValidator, async (req, res) => {
+    const {categoryId} = req.params;
+    const deleted = await service.drop(categoryId);
+
+    if (!deleted) {
+      return res.status(HttpCode.NOT_FOUND)
+        .send(`Not found`);
+    }
+
+    return res.status(HttpCode.OK)
+      .send(`Deleted`);
   });
 };
