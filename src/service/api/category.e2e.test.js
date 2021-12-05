@@ -166,4 +166,71 @@ describe(`Category`, () => {
     test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
     test(`Returns an empty list`, () => expect(response.body).toEqual([]));
   });
+
+  describe(`API creates a category if data is valid`, () => {
+    const newCategory = {
+      name: `Новая категория`,
+    };
+
+    let response;
+    let app;
+
+    beforeAll(async () => {
+      app = await createAPI();
+
+      response = await request(app)
+        .post(`/categories`)
+        .send(newCategory);
+    });
+
+    test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
+    test(`Content-Type application.json`, () => expect(response.type).toBe(`application/json`));
+    test(`Categories count is changed`, async () => {
+      await request(app)
+        .get(`/categories`)
+        .expect((res) => expect(res.body.length).toBe(10));
+    });
+  });
+
+  describe(`API refuses to create a category if data is invalid`, () => {
+    let app;
+
+    beforeAll(async () => {
+      app = await createAPI();
+    });
+
+    test(`When field type is wrong response code is 400`, async () => {
+      const badCategory = {
+        name: 2021
+      };
+
+      await request(app)
+        .post(`/categories`)
+        .send(badCategory)
+        .expect(HttpCode.BAD_REQUEST);
+    });
+
+    test(`When field value is wrong response code is 400`, async () => {
+      const badCategory = {
+        name: `Слишком длинное название категории, состоящее из 53 символов`
+      };
+
+      await request(app)
+        .post(`/categories`)
+        .send(badCategory)
+        .expect(HttpCode.BAD_REQUEST);
+    });
+
+    test(`Categories count isn't changed`, async () => {
+      const badCategory = {};
+
+      await request(app)
+        .post(`/categories`)
+        .send(badCategory);
+
+      await request(app)
+        .get(`/categories`)
+        .expect((res) => expect(res.body.length).toBe(9));
+    });
+  });
 });

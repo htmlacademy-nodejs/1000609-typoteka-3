@@ -118,9 +118,27 @@ mainRouter.get(`/search`, async (req, res) => {
   }
 });
 
-mainRouter.get(`/categories`, auth(true), (req, res) => {
-  const {user} = req.session;
-  res.render(`all-categories`, {user});
+mainRouter.get(`/categories`, auth(true), csrfProtection, async (req, res) => {
+  const {category, validationMessages, user} = req.session;
+  delete req.session.category;
+  delete req.session.validationMessages;
+
+  const categories = await api.getCategories();
+
+  res.render(`all-categories`, {category, categories, validationMessages, user, csrfToken: req.csrfToken()});
+});
+
+mainRouter.post(`/categories`, auth(true), csrfProtection, async (req, res) => {
+  const {category} = req.body;
+
+  try {
+    await api.createCategory({name: category});
+    res.redirect(`back`);
+  } catch (err) {
+    req.session.category = category;
+    req.session.validationMessages = prepareErrors(err);
+    res.redirect(`back`);
+  }
 });
 
 module.exports = mainRouter;

@@ -74,6 +74,13 @@ class API {
     return this._load(`/categories`, {params: {count}});
   }
 
+  createCategory(data) {
+    return this._load(`/categories`, {
+      method: HttpMethod.POST,
+      data
+    });
+  }
+
   search(query) {
     return this._load(`/search`, {params: {query}});
   }

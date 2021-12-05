@@ -32,6 +32,10 @@ class CategoryService {
 
     return this._Category.findAll({raw: true});
   }
+
+  create(category) {
+    return this._Category.create(category);
+  }
 }
 
 module.exports = CategoryService;

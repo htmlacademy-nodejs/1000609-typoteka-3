@@ -11,8 +11,8 @@ const ErrorCommentMessage = {
 
 const schema = Joi.object({
   text: Joi.string().min(20).required().messages({
-    'string.min': ErrorCommentMessage.MIN,
-    'any.required': ErrorCommentMessage.REQUIRED
+    ...([`any.required`, `string.empty`].reduce((result, rule) => ({...result, [rule]: ErrorCommentMessage.REQUIRED}), {})),
+    'string.min': ErrorCommentMessage.MIN
   }),
   userId: Joi.number().integer().positive().required().messages(
       [`any.required`, `number.base`, `number.positive`].reduce((result, rule) => ({...result, [rule]: ErrorCommentMessage.USER_ID}), {})

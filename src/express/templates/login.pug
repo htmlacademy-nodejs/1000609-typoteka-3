@@ -15,7 +15,7 @@ block content
               input(type="hidden" name="_csrf" value=csrfToken)
               .form__field
                 label
-                  input(type="email" name="email" placeholder="Электронная почта" required="" value=(userEmail ? userEmail : null))
+                  input(type="email" name="email" placeholder="Электронная почта" required="" value=(userEmail || null))
               if (validationMessages && 'email' in validationMessages)
                 +insertErrorMessage(validationMessages.email)
               .form__field
