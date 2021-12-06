@@ -15,7 +15,7 @@ module.exports = (app, postService, commentService, userService) => {
   app.use(`/articles`, route);
 
   route.get(`/`, async (req, res) => {
-    const {categoryId, categories, comments, limit, offset, needPopular} = req.query;
+    const {categoryId, limit, offset, needPopular} = req.query;
     let result;
 
     if (needPopular) {
@@ -23,7 +23,7 @@ module.exports = (app, postService, commentService, userService) => {
     } else if (limit || offset) {
       result = await postService.findPage({limit, offset, categoryId});
     } else {
-      result = await postService.findAll(categories, comments);
+      result = await postService.findAll();
     }
 
     res.status(HttpCode.OK)
@@ -73,18 +73,23 @@ module.exports = (app, postService, commentService, userService) => {
     }
 
     const io = req.app.locals.socketio;
-    const lastComments = await commentService.findLast();
-    const popularPosts = await postService.findPopular();
 
-    io.emit(`comment:delete`, lastComments.map((comment) => ({
-      id: comment.id,
-      text: comment.text.length > LAST_COMMENTS_TEXT_LENGTH ? `${comment.text.slice(0, LAST_COMMENTS_TEXT_LENGTH).trim()}…` : comment.text,
-      postId: comment.postId,
-      user: {
-        name: `${comment.users.name} ${comment.users.surname}`.trim(),
-        avatar: comment.users.avatar
-      }
-    })), popularPosts);
+    if (io) {
+      const [lastComments, popularPosts] = await Promise.all([
+        commentService.findLast(),
+        postService.findPopular()
+      ]);
+
+      io.emit(`comment:delete`, lastComments.map((comment) => ({
+        id: comment.id,
+        text: comment.text.length > LAST_COMMENTS_TEXT_LENGTH ? `${comment.text.slice(0, LAST_COMMENTS_TEXT_LENGTH).trim()}…` : comment.text,
+        postId: comment.postId,
+        user: {
+          name: `${comment.users.name} ${comment.users.surname}`.trim(),
+          avatar: comment.users.avatar
+        }
+      })), popularPosts);
+    }
 
     return res.status(HttpCode.OK)
       .send(`Deleted`);
@@ -92,7 +97,7 @@ module.exports = (app, postService, commentService, userService) => {
 
   route.get(`/:articleId/comments`, postExist(postService), routeParamsValidator, async (req, res) => {
     const {articleId: postId} = req.params;
-    const comments = await commentService.findAll(postId);
+    const comments = await commentService.findAllByPost(postId);
 
     res.status(HttpCode.OK)
       .json(comments);
@@ -108,18 +113,23 @@ module.exports = (app, postService, commentService, userService) => {
     }
 
     const io = req.app.locals.socketio;
-    const lastComments = await commentService.findLast();
-    const popularPosts = await postService.findPopular();
 
-    io.emit(`comment:delete`, lastComments.map((comment) => ({
-      id: comment.id,
-      text: comment.text.length > LAST_COMMENTS_TEXT_LENGTH ? `${comment.text.slice(0, LAST_COMMENTS_TEXT_LENGTH).trim()}…` : comment.text,
-      postId: comment.postId,
-      user: {
-        name: `${comment.users.name} ${comment.users.surname}`.trim(),
-        avatar: comment.users.avatar
-      }
-    })), popularPosts);
+    if (io) {
+      const [lastComments, popularPosts] = await Promise.all([
+        commentService.findLast(),
+        postService.findPopular()
+      ]);
+
+      io.emit(`comment:delete`, lastComments.map((comment) => ({
+        id: comment.id,
+        text: comment.text.length > LAST_COMMENTS_TEXT_LENGTH ? `${comment.text.slice(0, LAST_COMMENTS_TEXT_LENGTH).trim()}…` : comment.text,
+        postId: comment.postId,
+        user: {
+          name: `${comment.users.name} ${comment.users.surname}`.trim(),
+          avatar: comment.users.avatar
+        }
+      })), popularPosts);
+    }
 
     return res.status(HttpCode.OK)
       .send(`Deleted`);
@@ -131,16 +141,19 @@ module.exports = (app, postService, commentService, userService) => {
     const user = await userService.findById(comment.userId);
 
     const io = req.app.locals.socketio;
-    const popularPosts = await postService.findPopular();
 
-    io.emit(`comment:create`, {
-      ...comment,
-      text: comment.text.length > LAST_COMMENTS_TEXT_LENGTH ? `${comment.text.slice(0, LAST_COMMENTS_TEXT_LENGTH).trim()}…` : comment.text,
-      user: {
-        name: `${user.name} ${user.surname}`.trim(),
-        avatar: user.avatar
-      },
-    }, popularPosts);
+    if (io) {
+      const popularPosts = await postService.findPopular();
+
+      io.emit(`comment:create`, {
+        ...comment,
+        text: comment.text.length > LAST_COMMENTS_TEXT_LENGTH ? `${comment.text.slice(0, LAST_COMMENTS_TEXT_LENGTH).trim()}…` : comment.text,
+        user: {
+          name: `${user.name} ${user.surname}`.trim(),
+          avatar: user.avatar
+        },
+      }, popularPosts);
+    }
 
     return res.status(HttpCode.CREATED)
       .json(comment);

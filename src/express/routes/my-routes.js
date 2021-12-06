@@ -27,8 +27,8 @@ myRouter.post(`/:articleId`, async (req, res) => {
 
 myRouter.get(`/comments`, async (req, res) => {
   const {user} = req.session;
-  const posts = await api.getPosts({comments: true});
-  res.render(`user/comments`, {posts, user, formatDate, formatDatetime});
+  const comments = await api.getComments();
+  res.render(`user/comments`, {comments, user, formatDate, formatDatetime});
 });
 
 myRouter.post(`/comments/:commentId/article/:articleId`, async (req, res) => {

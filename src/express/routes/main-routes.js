@@ -21,7 +21,7 @@ mainRouter.get(`/`, async (req, res) => {
 
   const [popularPosts, {count, posts}, categories, lastComments] = await Promise.all([
     api.getPopularPosts(),
-    api.getPosts({categories: true, comments: true, limit, offset}),
+    api.getPosts({limit, offset}),
     api.getCategories(true),
     api.getLastComments()
   ]);

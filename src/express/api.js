@@ -21,8 +21,8 @@ class API {
     return response.data;
   }
 
-  getPosts({categoryId, categories, comments, limit, offset} = {}) {
-    return this._load(`/articles`, {params: {categoryId, categories, comments, limit, offset}});
+  getPosts({categoryId, limit, offset} = {}) {
+    return this._load(`/articles`, {params: {categoryId, limit, offset}});
   }
 
   getPopularPosts() {
@@ -53,8 +53,12 @@ class API {
     });
   }
 
-  getLastComments() {
+  getComments() {
     return this._load(`/comments`);
+  }
+
+  getLastComments() {
+    return this._load(`/comments/last`);
   }
 
   createComment(id, data) {

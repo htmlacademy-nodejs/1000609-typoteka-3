@@ -20,27 +20,11 @@ class PostService {
     return post.get();
   }
 
-  async findAll(needCategories, needComments) {
+  async findAll(needCategories) {
     const include = [];
 
     if (needCategories) {
       include.push(Alias.CATEGORIES);
-    }
-
-    if (needComments) {
-      include.push({
-        model: this._Comment,
-        as: Alias.COMMENTS,
-        include: [
-          {
-            model: this._User,
-            as: Alias.USERS,
-            attributes: {
-              exclude: [`passwordHash`]
-            }
-          }
-        ]
-      });
     }
 
     const posts = await this._Post.findAll({

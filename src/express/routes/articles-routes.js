@@ -62,7 +62,7 @@ articlesRouter.get(`/category/:id`, async (req, res) => {
   const offset = (page - 1) * POSTS_PER_PAGE;
 
   const [{count, posts}, categories] = await Promise.all([
-    api.getPosts({categoryId: id, categories: true, comments: true, limit, offset}),
+    api.getPosts({categoryId: id, limit, offset}),
     api.getCategories(true)
   ]);
 

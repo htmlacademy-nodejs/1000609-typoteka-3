@@ -20,7 +20,27 @@ class CommentService {
     return comment.get();
   }
 
-  findAll(postId) {
+  async findAll() {
+    const comments = await this._Comment.findAll({
+      include: [
+        Alias.POSTS,
+        {
+          model: this._User,
+          as: Alias.USERS,
+          attributes: {
+            exclude: [`passwordHash`]
+          }
+        }
+      ],
+      order: [
+        [`createdAt`, `DESC`]
+      ]
+    });
+
+    return comments.map((comment) => comment.get());
+  }
+
+  findAllByPost(postId) {
     return this._Comment.findAll({
       where: {postId},
       raw: true

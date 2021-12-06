@@ -9,6 +9,12 @@ module.exports = (app, service) => {
   app.use(`/comments`, route);
 
   route.get(`/`, async (req, res) => {
+    const comments = await service.findAll();
+    res.status(HttpCode.OK)
+      .json(comments);
+  });
+
+  route.get(`/last`, async (req, res) => {
     const comments = await service.findLast();
     res.status(HttpCode.OK)
       .json(comments);

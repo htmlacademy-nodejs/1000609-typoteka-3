@@ -10,6 +10,7 @@ const passwordUtils = require(`../lib/password`);
 const post = require(`./post`);
 const DataService = require(`../data-service/post`);
 const CommentService = require(`../data-service/comment`);
+const UserService = require(`../data-service/user`);
 
 const mockCategories = [
   `Деревья`,
@@ -114,7 +115,7 @@ const createAPI = async (posts = mockPosts) => {
   await initDB(mockDB, {categories: mockCategories, posts, users: mockUsers});
   const app = express();
   app.use(express.json());
-  post(app, new DataService(mockDB), new CommentService(mockDB));
+  post(app, new DataService(mockDB), new CommentService(mockDB), new UserService(mockDB));
   return app;
 };
 
