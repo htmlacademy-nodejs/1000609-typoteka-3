@@ -2,9 +2,27 @@
 
 (() => {
   const SERVER_URL = `http://localhost:3000`;
-  const COUNT_COMMENTS_ELEMENT = 4;
+  const COUNT_EXTRA_ELEMENT = 4;
 
   const socket = io(SERVER_URL);
+
+  const createPostElement = (post, isLast) => {
+    const postTemplate = document.querySelector(`#post-template`);
+    const postElement = postTemplate.cloneNode(true).content;
+    const postLinkElement = postElement.querySelector(`.hot__list-link`);
+    const postCommentsElement = postElement.querySelector(`.hot__link-sup`);
+
+    if (isLast) {
+      postElement.querySelector(`.hot__list-item`).classList.add(`hot__list-item--end`);
+    }
+
+    postLinkElement.href = `/articles/${post.id}`;
+    postLinkElement.innerHTML = `${post.announcement}&nbsp;`;
+    postCommentsElement.textContent = post.commentsCount;
+    postLinkElement.append(postCommentsElement);
+
+    return postElement;
+  };
 
   const createCommentElement = (comment, isLast) => {
     const commentTemplate = document.querySelector(`#comment-template`);
@@ -14,13 +32,33 @@
       commentElement.querySelector(`.last__list-item`).classList.add(`last__list-item--end`);
     }
 
-    commentElement.querySelector(`.last__list-item`).id = `comment-${comment.id}`;
     commentElement.querySelector(`.last__list-image`).src = `/img/${comment.user.avatar || 'icons/smile.svg'}`;
     commentElement.querySelector(`.last__list-name`).textContent = comment.user.name;
     commentElement.querySelector(`.last__list-link`).href = `/articles/${comment.postId}`;
     commentElement.querySelector(`.last__list-link`).textContent = comment.text;
 
     return commentElement;
+  };
+
+  const updatePostsElements = (popularPosts) => {
+    const popularPostsBlock = document.querySelector(`.main-page__hot`);
+    const popularPostsList = popularPostsBlock.querySelector(`.hot__list`);
+
+    if (!popularPosts.length) {
+      popularPostsList.remove();
+
+      const emptyWarningElement = document.createElement(`p`);
+      emptyWarningElement.classList.add(`hot__empty`);
+      emptyWarningElement.textContent = `Здесь пока ничего нет`;
+
+      popularPostsBlock.append(emptyWarningElement);
+    } else {
+      popularPostsList.innerHTML = ``;
+
+      popularPosts.forEach((post, index) => {
+        popularPostsList.append(createPostElement(post, index === popularPosts.length - 1));
+      });
+    }
   };
 
   const updateCommentsElementsAfterCreation = (comment) => {
@@ -30,7 +68,7 @@
     if (lastCommentsList) {
       const commentElements = lastCommentsList.querySelectorAll(`li`);
 
-      if (commentElements.length === COUNT_COMMENTS_ELEMENT) {
+      if (commentElements.length === COUNT_EXTRA_ELEMENT) {
         const [, , penultimateCommentElement, lastCommentElement] = commentElements;
         lastCommentElement.remove();
         penultimateCommentElement.classList.add(`last__list-item--end`);
@@ -56,13 +94,13 @@
     if (!lastComments.length) {
       lastCommentsList.remove();
 
-      const emptyWarningElement = document.createElement('p');
+      const emptyWarningElement = document.createElement(`p`);
       emptyWarningElement.classList.add(`last__empty`);
       emptyWarningElement.textContent = `Здесь пока ничего нет`;
 
       lastCommentsBlock.append(emptyWarningElement);
     } else {
-      lastCommentsList.innerHTML = '';
+      lastCommentsList.innerHTML = ``;
 
       lastComments.forEach((comment, index) => {
         lastCommentsList.append(createCommentElement(comment, index === lastComments.length - 1));
@@ -70,11 +108,13 @@
     }
   };
 
-  socket.addEventListener(`comment:create`, (comment) => {
+  socket.addEventListener(`comment:create`, (comment, popularPosts) => {
     updateCommentsElementsAfterCreation(comment);
+    updatePostsElements(popularPosts)
   });
 
-  socket.addEventListener(`comment:delete`, (lastComments) => {
+  socket.addEventListener(`comment:delete`, (lastComments, popularPosts) => {
     updateCommentsElementsAfterDeletion(lastComments);
+    updatePostsElements(popularPosts)
   });
 })();

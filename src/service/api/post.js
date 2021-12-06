@@ -74,6 +74,7 @@ module.exports = (app, postService, commentService, userService) => {
 
     const io = req.app.locals.socketio;
     const lastComments = await commentService.findLast();
+    const popularPosts = await postService.findPopular();
 
     io.emit(`comment:delete`, lastComments.map((comment) => ({
       id: comment.id,
@@ -83,7 +84,7 @@ module.exports = (app, postService, commentService, userService) => {
         name: `${comment.users.name} ${comment.users.surname}`.trim(),
         avatar: comment.users.avatar
       }
-    })));
+    })), popularPosts);
 
     return res.status(HttpCode.OK)
       .send(`Deleted`);
@@ -108,6 +109,7 @@ module.exports = (app, postService, commentService, userService) => {
 
     const io = req.app.locals.socketio;
     const lastComments = await commentService.findLast();
+    const popularPosts = await postService.findPopular();
 
     io.emit(`comment:delete`, lastComments.map((comment) => ({
       id: comment.id,
@@ -117,7 +119,7 @@ module.exports = (app, postService, commentService, userService) => {
         name: `${comment.users.name} ${comment.users.surname}`.trim(),
         avatar: comment.users.avatar
       }
-    })));
+    })), popularPosts);
 
     return res.status(HttpCode.OK)
       .send(`Deleted`);
@@ -129,6 +131,7 @@ module.exports = (app, postService, commentService, userService) => {
     const user = await userService.findById(comment.userId);
 
     const io = req.app.locals.socketio;
+    const popularPosts = await postService.findPopular();
 
     io.emit(`comment:create`, {
       ...comment,
@@ -137,7 +140,7 @@ module.exports = (app, postService, commentService, userService) => {
         name: `${user.name} ${user.surname}`.trim(),
         avatar: user.avatar
       },
-    });
+    }, popularPosts);
 
     return res.status(HttpCode.CREATED)
       .json(comment);

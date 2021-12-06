@@ -40,7 +40,7 @@ block content
           if (lastComments.length)
             ul.last__list
               each lastComment, index in lastComments
-                li(id=`comment-${lastComment.id}` class=`last__list-item${index === lastComments.length - 1 ? ' last__list-item--end' : ``}`)
+                li(class=`last__list-item${index === lastComments.length - 1 ? ' last__list-item--end' : ``}`)
                   img.last__list-image(src=`/img/${lastComment.users.avatar || 'icons/smile.svg'}` width="20" height="20" alt="Аватар пользователя")
                   b.last__list-name #{`${lastComment.users.name} ${lastComment.users.surname}`.trim()}
                   a.last__list-link(href=`/articles/${lastComment.postId}`) #{lastComment.text}
@@ -70,6 +70,7 @@ block content
                 b.preview__comment-count #{post.comments.length}
       +pagination(page, totalPages, 2, '?')
     include partials/footer.pug
+    include partials/post-template.pug
     include partials/comment-template.pug
     script(src="https://cdn.socket.io/4.4.0/socket.io.js")
     script(src="/js/socket.js")
