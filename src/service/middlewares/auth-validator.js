@@ -22,8 +22,9 @@ module.exports = (service) => async (req, res) => {
   if (passwordIsCorrect) {
     delete user.passwordHash;
     return res.status(HttpCode.OK).json(user);
-  } else {
-    return res.status(HttpCode.UNAUTHORIZED)
-      .send([{field: `password`, message: ErrorAuthMessage.PASSWORD}]);
   }
+
+  return res.status(HttpCode.UNAUTHORIZED)
+    .send([{field: `password`, message: ErrorAuthMessage.PASSWORD}]);
+
 };
