@@ -1,9 +1,11 @@
 'use strict';
 
 const express = require(`express`);
+const http = require(`http`);
 const {ExitCode, HttpCode, API_PREFIX} = require(`../../constants`);
 const getRoutes = require(`../api/api`);
 const getSequelize = require(`../lib/sequelize`);
+const getSocket = require(`../lib/socket`);
 const {getLogger} = require(`../lib/logger`);
 
 const DEFAULT_PORT = 3000;
@@ -27,6 +29,11 @@ module.exports = {
     const port = Number.parseInt(customPort, 10) || DEFAULT_PORT;
 
     const app = express();
+    const server = http.createServer(app);
+
+    const io = getSocket(server);
+    app.locals.socketio = io;
+
     app.use(express.json());
 
     app.use((req, res, next) => {
@@ -51,7 +58,7 @@ module.exports = {
       logger.error(`An error occurred on processing request: ${err.message}`);
     });
 
-    app.listen(port)
+    server.listen(port)
       .on(`listening`, () => logger.info(`Listening to connections on ${port}`))
       .on(`error`, (err) => {
         logger.error(`An error occurred: ${err.message}`);

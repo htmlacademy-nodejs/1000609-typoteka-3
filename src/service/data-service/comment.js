@@ -11,11 +11,13 @@ class CommentService {
     this._User = sequelize.models.User;
   }
 
-  create(postId, comment) {
-    return this._Comment.create({
+  async create(postId, commentData) {
+    const comment = await this._Comment.create({
       postId,
-      ...comment
+      ...commentData
     });
+
+    return comment.get();
   }
 
   findAll(postId) {

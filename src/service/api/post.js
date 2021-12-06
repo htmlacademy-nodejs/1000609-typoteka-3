@@ -7,7 +7,9 @@ const postExist = require(`../middlewares/post-exists`);
 const commentValidator = require(`../middlewares/comment-validator`);
 const routeParamsValidator = require(`../middlewares/route-params-validator`);
 
-module.exports = (app, postService, commentService) => {
+const LAST_COMMENTS_TEXT_LENGTH = 100;
+
+module.exports = (app, postService, commentService, userService) => {
   const route = new Router();
 
   app.use(`/articles`, route);
@@ -70,6 +72,19 @@ module.exports = (app, postService, commentService) => {
         .send(`Not found`);
     }
 
+    const io = req.app.locals.socketio;
+    const lastComments = await commentService.findLast();
+
+    io.emit(`comment:delete`, lastComments.map((comment) => ({
+      id: comment.id,
+      text: comment.text.length > LAST_COMMENTS_TEXT_LENGTH ? `${comment.text.slice(0, LAST_COMMENTS_TEXT_LENGTH).trim()}…` : comment.text,
+      postId: comment.postId,
+      user: {
+        name: `${comment.users.name} ${comment.users.surname}`.trim(),
+        avatar: comment.users.avatar
+      }
+    })));
+
     return res.status(HttpCode.OK)
       .send(`Deleted`);
   });
@@ -91,6 +106,19 @@ module.exports = (app, postService, commentService) => {
         .send(`Not found`);
     }
 
+    const io = req.app.locals.socketio;
+    const lastComments = await commentService.findLast();
+
+    io.emit(`comment:delete`, lastComments.map((comment) => ({
+      id: comment.id,
+      text: comment.text.length > LAST_COMMENTS_TEXT_LENGTH ? `${comment.text.slice(0, LAST_COMMENTS_TEXT_LENGTH).trim()}…` : comment.text,
+      postId: comment.postId,
+      user: {
+        name: `${comment.users.name} ${comment.users.surname}`.trim(),
+        avatar: comment.users.avatar
+      }
+    })));
+
     return res.status(HttpCode.OK)
       .send(`Deleted`);
   });
@@ -98,6 +126,18 @@ module.exports = (app, postService, commentService) => {
   route.post(`/:articleId/comments`, postExist(postService), commentValidator, routeParamsValidator, async (req, res) => {
     const {articleId: postId} = req.params;
     const comment = await commentService.create(postId, req.body);
+    const user = await userService.findById(comment.userId);
+
+    const io = req.app.locals.socketio;
+
+    io.emit(`comment:create`, {
+      ...comment,
+      text: comment.text.length > LAST_COMMENTS_TEXT_LENGTH ? `${comment.text.slice(0, LAST_COMMENTS_TEXT_LENGTH).trim()}…` : comment.text,
+      user: {
+        name: `${user.name} ${user.surname}`.trim(),
+        avatar: user.avatar
+      },
+    });
 
     return res.status(HttpCode.CREATED)
       .json(comment);

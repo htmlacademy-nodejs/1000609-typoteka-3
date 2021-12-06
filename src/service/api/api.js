@@ -22,12 +22,13 @@ const getRoutes = async () => {
 
   defineModels(sequelize);
   const commentService = new CommentService(sequelize);
+  const userService = new UserService(sequelize);
 
   category(app, new CategoryService(sequelize));
   comments(app, commentService);
   search(app, new SearchService(sequelize));
-  post(app, new PostService(sequelize), commentService);
-  user(app, new UserService(sequelize));
+  post(app, new PostService(sequelize), commentService, userService);
+  user(app, userService);
 
   return app;
 };
