@@ -9,14 +9,32 @@ module.exports = (app, service) => {
   app.use(`/comments`, route);
 
   route.get(`/`, async (req, res) => {
-    const comments = await service.findAll();
-    res.status(HttpCode.OK)
+    let comments = [];
+    let status;
+
+    try {
+      comments = await service.findAll();
+      status = HttpCode.OK;
+    } catch (err) {
+      status = HttpCode.BAD_REQUEST;
+    }
+
+    res.status(status)
       .json(comments);
   });
 
   route.get(`/last`, async (req, res) => {
-    const comments = await service.findLast();
-    res.status(HttpCode.OK)
+    let comments = [];
+    let status;
+
+    try {
+      comments = await service.findLast();
+      status = HttpCode.OK;
+    } catch (err) {
+      status = HttpCode.BAD_REQUEST;
+    }
+
+    res.status(status)
       .json(comments);
   });
 };

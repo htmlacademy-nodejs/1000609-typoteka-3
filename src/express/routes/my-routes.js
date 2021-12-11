@@ -10,8 +10,13 @@ myRouter.use(auth(true));
 
 myRouter.get(`/`, async (req, res) => {
   const {user} = req.session;
-  const posts = await api.getPosts();
-  res.render(`user/my`, {posts, user, formatDate, formatDatetime});
+
+  try {
+    const posts = await api.getPosts();
+    res.render(`user/my`, {posts, user, formatDate, formatDatetime});
+  } catch (err) {
+    res.render(`errors/500`);
+  }
 });
 
 myRouter.post(`/:articleId`, async (req, res) => {
@@ -27,8 +32,13 @@ myRouter.post(`/:articleId`, async (req, res) => {
 
 myRouter.get(`/comments`, async (req, res) => {
   const {user} = req.session;
-  const comments = await api.getComments();
-  res.render(`user/comments`, {comments, user, formatDate, formatDatetime});
+
+  try {
+    const comments = await api.getComments();
+    res.render(`user/comments`, {comments, user, formatDate, formatDatetime});
+  } catch (err) {
+    res.render(`errors/500`);
+  }
 });
 
 myRouter.post(`/comments/:commentId/article/:articleId`, async (req, res) => {

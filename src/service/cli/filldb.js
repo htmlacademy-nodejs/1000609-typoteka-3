@@ -51,29 +51,40 @@ module.exports = {
 
     logger.info(`Connection to database established`);
 
-    const titles = await readContent(FILE_TITLES_PATH, logger);
-    const sentences = await readContent(FILE_SENTENCES_PATH, logger);
-    const categories = await readContent(FILE_CATEGORIES_PATH, logger);
-    const comments = await readContent(FILE_COMMENTS_PATH, logger);
-    const users = [
-      {
-        email: `admin@typoteka.ru`,
-        name: `admin`,
-        surname: `admin`,
-        passwordHash: await passwordUtils.hash(`admin`),
-        isAdmin: true
-      },
-      {
-        email: `yasenevskiy@ya.ru`,
-        name: `Александр`,
-        surname: `Ясеневский`,
-        passwordHash: await passwordUtils.hash(`17111996`)
-      }
-    ];
+    let titles;
+    let sentences;
+    let categories;
+    let comments;
+    let users;
+
+    try {
+      titles = await readContent(FILE_TITLES_PATH, logger);
+      sentences = await readContent(FILE_SENTENCES_PATH, logger);
+      categories = await readContent(FILE_CATEGORIES_PATH, logger);
+      comments = await readContent(FILE_COMMENTS_PATH, logger);
+      users = [
+        {
+          email: `admin@typoteka.ru`,
+          name: `admin`,
+          surname: `admin`,
+          passwordHash: await passwordUtils.hash(`admin`),
+          isAdmin: true
+        },
+        {
+          email: `yasenevskiy@ya.ru`,
+          name: `Александр`,
+          surname: `Ясеневский`,
+          passwordHash: await passwordUtils.hash(`17111996`)
+        }
+      ];
+    } catch (err) {
+      logger.error(`An error occurred, try later`);
+      process.exit(ExitCode.ERROR);
+    }
 
     const count = Number.parseInt(args[0], 10) || DEFAULT_COUNT;
     const posts = generateMockData(count, titles, sentences, categories, comments, users);
 
-    return initDatabase(sequelize, {posts, categories, users});
+    return initDatabase(sequelize, {posts, categories, users}, logger);
   }
 };

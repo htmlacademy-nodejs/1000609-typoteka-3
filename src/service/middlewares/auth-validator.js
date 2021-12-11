@@ -10,21 +10,29 @@ const ErrorAuthMessage = {
 
 module.exports = (service) => async (req, res) => {
   const {email, password} = req.body;
-  const user = await service.findByEmail(email);
+  let status = HttpCode.UNAUTHORIZED;
+  let result = null;
 
-  if (!user) {
-    return res.status(HttpCode.UNAUTHORIZED)
-      .send([{field: `email`, message: ErrorAuthMessage.EMAIL}]);
+  try {
+    const user = await service.findByEmail(email);
+
+    if (!user) {
+      result = [{field: `email`, message: ErrorAuthMessage.EMAIL}];
+    } else {
+      const passwordIsCorrect = await passwordUtils.compare(password, user.passwordHash);
+
+      if (passwordIsCorrect) {
+        delete user.passwordHash;
+        status = HttpCode.OK;
+        result = user;
+      } else {
+        result = [{field: `password`, message: ErrorAuthMessage.PASSWORD}];
+      }
+    }
+  } catch (err) {
+    status = HttpCode.BAD_REQUEST;
   }
 
-  const passwordIsCorrect = await passwordUtils.compare(password, user.passwordHash);
-
-  if (passwordIsCorrect) {
-    delete user.passwordHash;
-    return res.status(HttpCode.OK).json(user);
-  }
-
-  return res.status(HttpCode.UNAUTHORIZED)
-    .send([{field: `password`, message: ErrorAuthMessage.PASSWORD}]);
-
+  return res.status(status)
+    .send(result);
 };

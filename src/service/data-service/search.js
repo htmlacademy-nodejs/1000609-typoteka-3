@@ -9,19 +9,23 @@ class SearchService {
   }
 
   async findAll(searchText) {
-    const posts = await this._Post.findAll({
-      where: {
-        title: {
-          [Op.substring]: searchText
-        }
-      },
-      include: [Alias.CATEGORIES],
-      order: [
-        [`createdAt`, `DESC`]
-      ]
-    });
+    try {
+      const posts = await this._Post.findAll({
+        where: {
+          title: {
+            [Op.substring]: searchText
+          }
+        },
+        include: [Alias.CATEGORIES],
+        order: [
+          [`createdAt`, `DESC`]
+        ]
+      });
 
-    return posts.map((post) => post.get());
+      return posts.map((post) => post.get());
+    } catch (err) {
+      return null;
+    }
   }
 }
 

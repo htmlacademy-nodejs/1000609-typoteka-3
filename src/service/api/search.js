@@ -16,8 +16,22 @@ module.exports = (app, service) => {
       return;
     }
 
-    const searchResults = await service.findAll(query);
-    const searchStatus = searchResults.length > 0 ? HttpCode.OK : HttpCode.NOT_FOUND;
+    let searchResults = [];
+    let searchStatus;
+
+    try {
+      searchResults = await service.findAll(query);
+
+      if (!searchResults) {
+        searchStatus = HttpCode.BAD_REQUEST;
+      } else if (searchResults.length > 0) {
+        searchStatus = HttpCode.OK;
+      } else {
+        searchStatus = HttpCode.NOT_FOUND;
+      }
+    } catch (err) {
+      searchStatus = HttpCode.BAD_REQUEST;
+    }
 
     res.status(searchStatus)
       .json(searchResults);

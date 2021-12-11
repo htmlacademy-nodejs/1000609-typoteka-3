@@ -27,6 +27,14 @@ module.exports = {
 
     const [customPort] = args;
     const port = Number.parseInt(customPort, 10) || DEFAULT_PORT;
+    let routes;
+
+    try {
+      routes = await getRoutes();
+    } catch (err) {
+      logger.error(`Routes not received`);
+      process.exit(ExitCode.ERROR);
+    }
 
     const app = express();
     const server = http.createServer(app);
@@ -44,7 +52,7 @@ module.exports = {
       return next();
     });
 
-    app.use(API_PREFIX, await getRoutes());
+    app.use(API_PREFIX, routes);
 
     app.use((req, res) => {
       res

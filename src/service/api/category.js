@@ -12,41 +12,79 @@ module.exports = (app, service) => {
 
   route.get(`/`, async (req, res) => {
     const {count} = req.query;
-    const categories = await service.findAll(count);
-    res.status(HttpCode.OK)
+    let categories = [];
+    let status;
+
+    try {
+      categories = await service.findAll(count);
+      status = categories ? HttpCode.OK : HttpCode.BAD_REQUEST;
+    } catch (err) {
+      status = HttpCode.BAD_REQUEST;
+    }
+
+    res.status(status)
       .json(categories);
   });
 
   route.post(`/`, categoryValidator, async (req, res) => {
-    const category = await service.create(req.body);
+    let category = null;
+    let status;
 
-    res.status(HttpCode.CREATED)
+    try {
+      category = await service.create(req.body);
+      status = category ? HttpCode.CREATED : HttpCode.BAD_REQUEST;
+    } catch (err) {
+      status = HttpCode.BAD_REQUEST;
+    }
+
+    res.status(status)
       .json(category);
   });
 
   route.put(`/:categoryId`, categoryValidator, routeParamsValidator, async (req, res) => {
     const {categoryId} = req.params;
-    const updated = await service.update(categoryId, req.body);
 
-    if (!updated) {
-      return res.status(HttpCode.NOT_FOUND)
-        .send(`Not found with ${categoryId}`);
+    let body = null;
+    let status;
+
+    try {
+      const category = await service.update(categoryId, req.body);
+      if (category) {
+        body = `Updated`;
+        status = HttpCode.OK;
+      } else {
+        body = `Not found with ${categoryId}`;
+        status = HttpCode.NOT_FOUND;
+      }
+    } catch (err) {
+      status = HttpCode.BAD_REQUEST;
     }
 
-    return res.status(HttpCode.OK)
-      .send(`Updated`);
+    res.status(status)
+      .json(body);
   });
 
   route.delete(`/:categoryId`, routeParamsValidator, async (req, res) => {
     const {categoryId} = req.params;
-    const deleted = await service.drop(categoryId);
 
-    if (!deleted) {
-      return res.status(HttpCode.NOT_FOUND)
-        .send(`Not found`);
+    let body = null;
+    let status;
+
+    try {
+      const category = await service.drop(categoryId);
+
+      if (category) {
+        body = `Deleted`;
+        status = HttpCode.OK;
+      } else {
+        body = `Not found`;
+        status = HttpCode.NOT_FOUND;
+      }
+    } catch (err) {
+      status = HttpCode.BAD_REQUEST;
     }
 
-    return res.status(HttpCode.OK)
-      .send(`Deleted`);
+    res.status(status)
+      .json(body);
   });
 };

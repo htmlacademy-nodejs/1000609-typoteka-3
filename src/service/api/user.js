@@ -13,12 +13,20 @@ module.exports = (app, service) => {
 
   route.post(`/`, userValidator(service), async (req, res) => {
     const data = req.body;
-    data.passwordHash = await passwordUtils.hash(data.password);
+    let result = null;
+    let status;
 
-    const result = await service.create(data);
-    delete result.passwordHash;
+    try {
+      data.passwordHash = await passwordUtils.hash(data.password);
 
-    res.status(HttpCode.CREATED)
+      result = await service.create(data);
+      delete result.passwordHash;
+      status = HttpCode.CREATED;
+    } catch (err) {
+      status = HttpCode.BAD_REQUEST;
+    }
+
+    res.status(status)
       .json(result);
   });
 

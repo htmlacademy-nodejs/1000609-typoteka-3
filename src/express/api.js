@@ -17,8 +17,12 @@ class API {
   }
 
   async _load(url, options) {
-    const response = await this._http.request({url, ...options});
-    return response.data;
+    try {
+      const response = await this._http.request({url, ...options});
+      return response.data;
+    } catch (err) {
+      return null;
+    }
   }
 
   getPosts({categoryId, limit, offset} = {}) {

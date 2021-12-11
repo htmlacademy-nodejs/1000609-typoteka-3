@@ -15,59 +15,71 @@ class PostService {
   }
 
   async create(postData) {
-    const post = await this._Post.create(postData);
-    await post.addCategories(postData.categories);
-    return post.get();
+    try {
+      const post = await this._Post.create(postData);
+      await post.addCategories(postData.categories);
+      return post.get();
+    } catch (err) {
+      return null;
+    }
   }
 
   async findAll(needCategories) {
-    const include = [];
+    try {
+      const include = [];
 
-    if (needCategories) {
-      include.push(Alias.CATEGORIES);
+      if (needCategories) {
+        include.push(Alias.CATEGORIES);
+      }
+
+      const posts = await this._Post.findAll({
+        include,
+        order: [
+          [`createdAt`, `DESC`]
+        ]
+      });
+      return posts.map((post) => post.get());
+    } catch (err) {
+      return null;
     }
-
-    const posts = await this._Post.findAll({
-      include,
-      order: [
-        [`createdAt`, `DESC`]
-      ]
-    });
-    return posts.map((post) => post.get());
   }
 
   async findPopular() {
-    const posts = await this._Post.findAll({
-      subQuery: false,
-      include: {
-        model: this._Comment,
-        as: Alias.COMMENTS,
-        attributes: [],
-      },
-      attributes: {
-        include: [
-          [Sequelize.fn(`COUNT`, Sequelize.col(`comments.id`)), `commentsCount`]
-        ]
-      },
-      group: [`Post.id`],
-      order: [
-        [Sequelize.fn(`COUNT`, Sequelize.col(`comments.id`)), `DESC`]
-      ],
-      limit: POPULAR_POSTS_NUMBER
-    });
-
-    return posts
-      .map((post) => post.get())
-      .filter((post) => post.commentsCount > 0)
-      .map((post) => {
-        if (post.announcement.length < POPULAR_POSTS_ANNOUNCEMENT_LENGTH) {
-          return post;
-        }
-        return {
-          ...post,
-          announcement: `${post.announcement.slice(0, POPULAR_POSTS_ANNOUNCEMENT_LENGTH).trim()}…`
-        };
+    try {
+      const posts = await this._Post.findAll({
+        subQuery: false,
+        include: {
+          model: this._Comment,
+          as: Alias.COMMENTS,
+          attributes: [],
+        },
+        attributes: {
+          include: [
+            [Sequelize.fn(`COUNT`, Sequelize.col(`comments.id`)), `commentsCount`]
+          ]
+        },
+        group: [`Post.id`],
+        order: [
+          [Sequelize.fn(`COUNT`, Sequelize.col(`comments.id`)), `DESC`]
+        ],
+        limit: POPULAR_POSTS_NUMBER
       });
+
+      return posts
+        .map((post) => post.get())
+        .filter((post) => post.commentsCount > 0)
+        .map((post) => {
+          if (post.announcement.length < POPULAR_POSTS_ANNOUNCEMENT_LENGTH) {
+            return post;
+          }
+          return {
+            ...post,
+            announcement: `${post.announcement.slice(0, POPULAR_POSTS_ANNOUNCEMENT_LENGTH).trim()}…`
+          };
+        });
+    } catch (err) {
+      return null;
+    }
   }
 
   findOne(id) {
@@ -98,53 +110,65 @@ class PostService {
   }
 
   async findPage({limit, offset, categoryId}) {
-    const {count, rows} = await this._Post.findAndCountAll({
-      limit,
-      offset,
-      include: [
-        Alias.CATEGORIES,
-        ...(categoryId ? [{
-          model: this._PostCategory,
-          as: Alias.POST_CATEGORIES,
-          where: {
-            CategoryId: categoryId
-          }
-        }] : []),
-        {
-          model: this._Comment,
-          as: Alias.COMMENTS,
-          include: [
-            {
-              model: this._User,
-              as: Alias.USERS,
-              attributes: {
-                exclude: [`passwordHash`]
-              }
+    try {
+      const {count, rows} = await this._Post.findAndCountAll({
+        limit,
+        offset,
+        include: [
+          Alias.CATEGORIES,
+          ...(categoryId ? [{
+            model: this._PostCategory,
+            as: Alias.POST_CATEGORIES,
+            where: {
+              CategoryId: categoryId
             }
-          ]
-        }
-      ],
-      order: [
-        [`createdAt`, `DESC`]
-      ],
-      distinct: true
-    });
+          }] : []),
+          {
+            model: this._Comment,
+            as: Alias.COMMENTS,
+            include: [
+              {
+                model: this._User,
+                as: Alias.USERS,
+                attributes: {
+                  exclude: [`passwordHash`]
+                }
+              }
+            ]
+          }
+        ],
+        order: [
+          [`createdAt`, `DESC`]
+        ],
+        distinct: true
+      });
 
-    return {count, posts: rows};
+      return {count, posts: rows};
+    } catch (err) {
+      return null;
+    }
   }
 
   async update(id, post) {
-    const [affectedRows] = await this._Post.update(post, {
-      where: {id}
-    });
-    return !!affectedRows;
+    try {
+      const [affectedRows] = await this._Post.update(post, {
+        where: {id}
+      });
+      return !!affectedRows;
+    } catch (err) {
+      return null;
+    }
   }
 
   async drop(id) {
-    const deletedRows = await this._Post.destroy({
-      where: {id}
-    });
-    return !!deletedRows;
+    try {
+      const deletedRows = await this._Post.destroy({
+        where: {id}
+      });
+      return !!deletedRows;
+    } catch (err) {
+      return null;
+    }
   }
 }
 

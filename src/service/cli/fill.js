@@ -41,13 +41,24 @@ module.exports = {
   name: `--fill`,
   async run(args) {
     const count = Number.parseInt(args[0], 10) || DEFAULT_COUNT;
-    const titles = await readContent(FILE_TITLES_PATH);
-    const sentences = await readContent(FILE_SENTENCES_PATH);
-    const categories = await readContent(FILE_CATEGORIES_PATH);
-    const commentSentences = await readContent(FILE_COMMENTS_PATH);
 
     if (count > 1000) {
       console.error(chalk.red(`Не больше 1000 публикаций`));
+      process.exit(ExitCode.ERROR);
+    }
+
+    let titles;
+    let sentences;
+    let categories;
+    let commentSentences;
+
+    try {
+      titles = await readContent(FILE_TITLES_PATH);
+      sentences = await readContent(FILE_SENTENCES_PATH);
+      categories = await readContent(FILE_CATEGORIES_PATH);
+      commentSentences = await readContent(FILE_COMMENTS_PATH);
+    } catch (err) {
+      console.error(chalk.red(`Произошла ошибка, повторите попытку позже`));
       process.exit(ExitCode.ERROR);
     }
 

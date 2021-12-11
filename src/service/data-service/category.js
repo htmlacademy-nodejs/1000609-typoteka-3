@@ -11,23 +11,27 @@ class CategoryService {
 
   async findAll(needCount) {
     if (needCount) {
-      const result = await this._Category.findAll({
-        attributes: [
-          `id`,
-          `name`,
-          [
-            Sequelize.fn(`COUNT`, Sequelize.col(`CategoryId`)), `count`
-          ]
-        ],
-        group: [Sequelize.col(`Category.id`)],
-        include: [{
-          model: this._PostCategory,
-          as: Alias.POST_CATEGORIES,
-          attributes: []
-        }]
-      });
+      try {
+        const result = await this._Category.findAll({
+          attributes: [
+            `id`,
+            `name`,
+            [
+              Sequelize.fn(`COUNT`, Sequelize.col(`CategoryId`)), `count`
+            ]
+          ],
+          group: [Sequelize.col(`Category.id`)],
+          include: [{
+            model: this._PostCategory,
+            as: Alias.POST_CATEGORIES,
+            attributes: []
+          }]
+        });
 
-      return result.map((it) => it.get());
+        return result.map((it) => it.get());
+      } catch (err) {
+        return null;
+      }
     }
 
     return this._Category.findAll({raw: true});
@@ -38,17 +42,25 @@ class CategoryService {
   }
 
   async update(id, category) {
-    const [affectedRows] = await this._Category.update(category, {
-      where: {id}
-    });
-    return !!affectedRows;
+    try {
+      const [affectedRows] = await this._Category.update(category, {
+        where: {id}
+      });
+      return !!affectedRows;
+    } catch (err) {
+      return null;
+    }
   }
 
   async drop(id) {
-    const deletedRows = await this._Category.destroy({
-      where: {id}
-    });
-    return !!deletedRows;
+    try {
+      const deletedRows = await this._Category.destroy({
+        where: {id}
+      });
+      return !!deletedRows;
+    } catch (err) {
+      return null;
+    }
   }
 }
 

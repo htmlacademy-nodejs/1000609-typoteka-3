@@ -19,18 +19,22 @@ mainRouter.get(`/`, async (req, res) => {
   const limit = POSTS_PER_PAGE;
   const offset = (page - 1) * POSTS_PER_PAGE;
 
-  const [popularPosts, {count, posts}, categories, lastComments] = await Promise.all([
-    api.getPopularPosts(),
-    api.getPosts({limit, offset}),
-    api.getCategories(true),
-    api.getLastComments()
-  ]);
+  try {
+    const [popularPosts, {count, posts}, categories, lastComments] = await Promise.all([
+      api.getPopularPosts(),
+      api.getPosts({limit, offset}),
+      api.getCategories(true),
+      api.getLastComments()
+    ]);
 
-  if (posts.length) {
-    const totalPages = Math.ceil(count / POSTS_PER_PAGE);
-    res.render(`main`, {popularPosts, posts, categories, user, lastComments, page, totalPages, formatDate, formatDatetime});
-  } else {
-    res.render(`main-empty`, {user});
+    if (posts.length) {
+      const totalPages = Math.ceil(count / POSTS_PER_PAGE);
+      res.render(`main`, {popularPosts, posts, categories, user, lastComments, page, totalPages, formatDate, formatDatetime});
+    } else {
+      res.render(`main-empty`, {user});
+    }
+  } catch (err) {
+    res.render(`errors/500`);
   }
 });
 
@@ -126,9 +130,14 @@ mainRouter.get(`/categories`, auth(true), csrfProtection, async (req, res) => {
   delete req.session.validationMessages;
 
   const isValidationForNew = !!category;
-  const categories = await api.getCategories(true);
 
-  res.render(`all-categories`, {category, categories, editingId, editingName, isValidationForNew, validationMessages, user, csrfToken: req.csrfToken()});
+  try {
+    const categories = await api.getCategories(true);
+
+    res.render(`all-categories`, {category, categories, editingId, editingName, isValidationForNew, validationMessages, user, csrfToken: req.csrfToken()});
+  } catch (err) {
+    res.render(`errors/500`);
+  }
 });
 
 mainRouter.post(`/categories`, auth(true), csrfProtection, async (req, res) => {

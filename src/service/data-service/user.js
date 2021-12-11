@@ -6,22 +6,34 @@ class UserService {
   }
 
   async create(userData) {
-    const user = await this._User.create(userData);
-    return user.get();
+    try {
+      const user = await this._User.create(userData);
+      return user.get();
+    } catch (err) {
+      return null;
+    }
   }
 
   async findById(id) {
-    const user = await this._User.findOne({
-      where: {id}
-    });
-    return user && user.get();
+    try {
+      const user = await this._User.findOne({
+        where: {id}
+      });
+      return user && user.get();
+    } catch (err) {
+      return null;
+    }
   }
 
   async findByEmail(email) {
-    const user = await this._User.findOne({
-      where: {email}
-    });
-    return user && user.get();
+    try {
+      const user = await this._User.findOne({
+        where: {email}
+      });
+      return user && user.get();
+    } catch (err) {
+      return null;
+    }
   }
 }
 

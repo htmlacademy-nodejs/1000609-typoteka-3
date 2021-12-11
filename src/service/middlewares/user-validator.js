@@ -40,19 +40,24 @@ module.exports = (service) => async (req, res, next) => {
   const newUser = req.body;
   const {error} = schema.validate(newUser, {abortEarly: false});
 
-  if (error) {
-    return res.status(HttpCode.BAD_REQUEST)
-      .send(error.details.map((err) => ({
-        field: err.context.key,
-        message: err.message
-      })));
-  }
+  try {
+    if (error) {
+      return res.status(HttpCode.BAD_REQUEST)
+        .send(error.details.map((err) => ({
+          field: err.context.key,
+          message: err.message
+        })));
+    }
 
-  const userByEmail = await service.findByEmail(req.body.email);
+    const userByEmail = await service.findByEmail(req.body.email);
 
-  if (userByEmail) {
+    if (userByEmail) {
+      return res.status(HttpCode.BAD_REQUEST)
+        .send(ErrorRegisterMessage.EMAIL_EXIST);
+    }
+  } catch (err) {
     return res.status(HttpCode.BAD_REQUEST)
-      .send(ErrorRegisterMessage.EMAIL_EXIST);
+      .send([]);
   }
 
   return next();

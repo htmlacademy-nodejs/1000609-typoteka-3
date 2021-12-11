@@ -12,32 +12,40 @@ class CommentService {
   }
 
   async create(postId, commentData) {
-    const comment = await this._Comment.create({
-      postId,
-      ...commentData
-    });
+    try {
+      const comment = await this._Comment.create({
+        postId,
+        ...commentData
+      });
 
-    return comment.get();
+      return comment.get();
+    } catch (err) {
+      return null;
+    }
   }
 
   async findAll() {
-    const comments = await this._Comment.findAll({
-      include: [
-        Alias.POSTS,
-        {
-          model: this._User,
-          as: Alias.USERS,
-          attributes: {
-            exclude: [`passwordHash`]
+    try {
+      const comments = await this._Comment.findAll({
+        include: [
+          Alias.POSTS,
+          {
+            model: this._User,
+            as: Alias.USERS,
+            attributes: {
+              exclude: [`passwordHash`]
+            }
           }
-        }
-      ],
-      order: [
-        [`createdAt`, `DESC`]
-      ]
-    });
+        ],
+        order: [
+          [`createdAt`, `DESC`]
+        ]
+      });
 
-    return comments.map((comment) => comment.get());
+      return comments.map((comment) => comment.get());
+    } catch (err) {
+      return null;
+    }
   }
 
   findAllByPost(postId) {
@@ -48,40 +56,48 @@ class CommentService {
   }
 
   async findLast() {
-    const comments = await this._Comment.findAll({
-      include: [
-        {
-          model: this._User,
-          as: Alias.USERS,
-          attributes: {
-            exclude: [`passwordHash`]
+    try {
+      const comments = await this._Comment.findAll({
+        include: [
+          {
+            model: this._User,
+            as: Alias.USERS,
+            attributes: {
+              exclude: [`passwordHash`]
+            }
           }
-        }
-      ],
-      order: [
-        [`createdAt`, `DESC`]
-      ],
-      limit: LAST_COMMENTS_NUMBER
-    });
-
-    return comments
-      .map((comment) => comment.get())
-      .map((comment) => {
-        if (comment.text.length < LAST_COMMENTS_TEXT_LENGTH) {
-          return comment;
-        }
-        return {
-          ...comment,
-          text: `${comment.text.slice(0, LAST_COMMENTS_TEXT_LENGTH).trim()}…`
-        };
+        ],
+        order: [
+          [`createdAt`, `DESC`]
+        ],
+        limit: LAST_COMMENTS_NUMBER
       });
+
+      return comments
+        .map((comment) => comment.get())
+        .map((comment) => {
+          if (comment.text.length < LAST_COMMENTS_TEXT_LENGTH) {
+            return comment;
+          }
+          return {
+            ...comment,
+            text: `${comment.text.slice(0, LAST_COMMENTS_TEXT_LENGTH).trim()}…`
+          };
+        });
+    } catch (err) {
+      return null;
+    }
   }
 
   async drop(id) {
-    const deletedRows = await this._Comment.destroy({
-      where: {id}
-    });
-    return !!deletedRows;
+    try {
+      const deletedRows = await this._Comment.destroy({
+        where: {id}
+      });
+      return !!deletedRows;
+    } catch (err) {
+      return null;
+    }
   }
 }
 

@@ -12,19 +12,28 @@ const articlesRouter = new Router();
 const csrfProtection = csrf();
 
 const getPostWithCategories = async (postId, countCategories) => {
-  const [post, categories] = await Promise.all([
-    api.getPost(postId),
-    api.getCategories(countCategories)
-  ]);
-  return [post, categories];
+  try {
+    const [post, categories] = await Promise.all([
+      api.getPost(postId),
+      api.getCategories(countCategories)
+    ]);
+    return [post, categories];
+  } catch (err) {
+    return [null, []];
+  }
 };
 
 articlesRouter.get(`/add`, auth(true), csrfProtection, async (req, res) => {
   const {post, user, validationMessages} = req.session;
   delete req.session.post;
   delete req.session.validationMessages;
-  const categories = await api.getCategories();
-  res.render(`articles/new-post`, {post, categories, user, validationMessages, csrfToken: req.csrfToken()});
+
+  try {
+    const categories = await api.getCategories();
+    res.render(`articles/new-post`, {post, categories, user, validationMessages, csrfToken: req.csrfToken()});
+  } catch (err) {
+    res.render(`errors/500`);
+  }
 });
 
 articlesRouter.post(`/add`, auth(true), upload.single(`upload`), csrfProtection, async (req, res) => {
@@ -61,14 +70,18 @@ articlesRouter.get(`/category/:id`, async (req, res) => {
   const limit = POSTS_PER_PAGE;
   const offset = (page - 1) * POSTS_PER_PAGE;
 
-  const [{count, posts}, categories] = await Promise.all([
-    api.getPosts({categoryId: id, limit, offset}),
-    api.getCategories(true)
-  ]);
+  try {
+    const [{count, posts}, categories] = await Promise.all([
+      api.getPosts({categoryId: id, limit, offset}),
+      api.getCategories(true)
+    ]);
 
-  const totalPages = Math.ceil(count / POSTS_PER_PAGE);
+    const totalPages = Math.ceil(count / POSTS_PER_PAGE);
 
-  res.render(`articles/articles-by-category`, {posts, categories, id, user, page, totalPages, formatDate, formatDatetime});
+    res.render(`articles/articles-by-category`, {posts, categories, id, user, page, totalPages, formatDate, formatDatetime});
+  } catch (err) {
+    res.render(`errors/500`);
+  }
 });
 
 articlesRouter.get(`/:id`, csrfProtection, async (req, res) => {
@@ -76,9 +89,18 @@ articlesRouter.get(`/:id`, csrfProtection, async (req, res) => {
   const {comment, validationMessages, user} = req.session;
   delete req.session.comment;
   delete req.session.validationMessages;
-  const [post, categories] = await getPostWithCategories(id, true);
 
-  res.render(`articles/post`, {id, post, categories, comment, validationMessages, user, csrfToken: req.csrfToken(), formatDate, formatDatetime});
+  try {
+    const [post, categories] = await getPostWithCategories(id, true);
+
+    if (post) {
+      res.render(`articles/post`, {id, post, categories, comment, validationMessages, user, csrfToken: req.csrfToken(), formatDate, formatDatetime});
+    } else {
+      res.render(`errors/500`);
+    }
+  } catch (err) {
+    res.render(`errors/500`);
+  }
 });
 
 articlesRouter.post(`/:id/comments`, auth(), csrfProtection, async (req, res) => {
@@ -103,15 +125,25 @@ articlesRouter.get(`/edit/:id`, auth(true), csrfProtection, async (req, res) => 
   delete req.session.post;
   delete req.session.validationMessages;
 
-  if (!post) {
-    [post, categories] = await getPostWithCategories(id);
-    const postCategories = post.categories.map((category) => category.id.toString());
-    post = {...post, categories: postCategories};
-  } else {
-    categories = await api.getCategories();
-  }
 
-  res.render(`articles/new-post`, {id, post, categories, user, validationMessages, csrfToken: req.csrfToken()});
+  try {
+    if (!post) {
+      [post, categories] = await getPostWithCategories(id);
+
+      if (!post) {
+        res.render(`errors/500`);
+        return;
+      } else {
+        const postCategories = post.categories.map((category) => category.id.toString());
+        post = {...post, categories: postCategories};
+      }
+    } else {
+      categories = await api.getCategories();
+    }
+    res.render(`articles/new-post`, {id, post, categories, user, validationMessages, csrfToken: req.csrfToken()});
+  } catch (err) {
+    res.render(`errors/500`);
+  }
 });
 
 articlesRouter.post(`/edit/:id`, auth(true), upload.single(`upload`), csrfProtection, async (req, res) => {
