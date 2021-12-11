@@ -78,8 +78,8 @@ class API {
     });
   }
 
-  getCategories(count) {
-    return this._load(`/categories`, {params: {count}});
+  getCategories(count, withPosts) {
+    return this._load(`/categories`, {params: {count, withPosts}});
   }
 
   createCategory(data) {

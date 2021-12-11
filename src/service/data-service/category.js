@@ -9,10 +9,10 @@ class CategoryService {
     this._PostCategory = sequelize.models.PostCategory;
   }
 
-  async findAll(needCount) {
+  async findAll(needCount, withPosts) {
     if (needCount) {
       try {
-        const result = await this._Category.findAll({
+        const categories = await this._Category.findAll({
           attributes: [
             `id`,
             `name`,
@@ -28,7 +28,13 @@ class CategoryService {
           }]
         });
 
-        return result.map((it) => it.get());
+        let result = categories.map((it) => it.get());
+
+        if (withPosts) {
+          result = result.filter(({count}) => count > 0);
+        }
+
+        return result;
       } catch (err) {
         return null;
       }

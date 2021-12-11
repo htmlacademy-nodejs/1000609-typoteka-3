@@ -11,12 +11,12 @@ module.exports = (app, service) => {
   app.use(`/categories`, route);
 
   route.get(`/`, async (req, res) => {
-    const {count} = req.query;
+    const {count, withPosts} = req.query;
     let categories = [];
     let status;
 
     try {
-      categories = await service.findAll(count);
+      categories = await service.findAll(count, withPosts);
       status = categories ? HttpCode.OK : HttpCode.BAD_REQUEST;
     } catch (err) {
       status = HttpCode.BAD_REQUEST;
