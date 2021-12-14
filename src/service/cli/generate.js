@@ -7,6 +7,7 @@ const {FILE_TITLES_PATH, FILE_SENTENCES_PATH, FILE_CATEGORIES_PATH, FILE_COMMENT
 const {getRandomInt, getRandomDate, getPictureFileName, shuffleAndSlice, readContent} = require(`../../utils`);
 
 const DEFAULT_COUNT = 1;
+const MAX_COUNT = 1000;
 const FILE_NAME = `mocks.json`;
 
 const CommentsRestrict = {
@@ -39,7 +40,7 @@ module.exports = {
   async run(args) {
     const count = Number.parseInt(args[0], 10) || DEFAULT_COUNT;
 
-    if (count > 1000) {
+    if (count > MAX_COUNT) {
       console.error(chalk.red(`Не больше 1000 публикаций`));
       process.exit(ExitCode.ERROR);
     }
