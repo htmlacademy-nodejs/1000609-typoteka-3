@@ -16,15 +16,6 @@ class API {
     });
   }
 
-  async _load(url, options) {
-    try {
-      const response = await this._http.request({url, ...options});
-      return response.data;
-    } catch (err) {
-      return null;
-    }
-  }
-
   getPosts({categoryId, limit, offset} = {}) {
     return this._load(`/articles`, {params: {categoryId, limit, offset}});
   }
@@ -118,6 +109,15 @@ class API {
       method: HttpMethod.POST,
       data
     });
+  }
+
+  async _load(url, options) {
+    try {
+      const response = await this._http.request({url, ...options});
+      return response.data;
+    } catch (err) {
+      return null;
+    }
   }
 }
 
